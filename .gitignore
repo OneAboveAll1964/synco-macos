@@ -1,0 +1,10 @@
+.DS_Store
+.build/
+.swiftpm/
+build/
+dist/
+*.xcodeproj
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
+Package.resolved
+.idea/
