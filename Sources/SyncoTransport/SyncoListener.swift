@@ -5,7 +5,7 @@ import SyncoCore
 public actor SyncoListener {
     public nonisolated let nwListener: NWListener
 
-    private let queue = DispatchQueue(label: "app.synco.transport.listener")
+    private let queue = DispatchQueue(label: "com.shkomaghdid.synco.macos.transport.listener")
     private let termination = TerminationRegistry()
     private let accepted: AsyncStream<FramedConnection>
     private let acceptedContinuation: AsyncStream<FramedConnection>.Continuation

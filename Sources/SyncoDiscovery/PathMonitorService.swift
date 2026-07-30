@@ -3,7 +3,7 @@ import Network
 import SyncoCore
 
 public actor PathMonitorService {
-    private let queue = DispatchQueue(label: "app.synco.discovery.path")
+    private let queue = DispatchQueue(label: "com.shkomaghdid.synco.macos.discovery.path")
     private var monitor: NWPathMonitor?
     private var events: AsyncStream<NetworkPathChange>.Continuation?
     private var latest: NetworkPathChange?

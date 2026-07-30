@@ -3,7 +3,7 @@ import Security
 import SyncoCore
 
 public struct IdentityKeychainStore: Sendable {
-    public static let defaultService = "app.synco.identity"
+    public static let defaultService = "com.shkomaghdid.synco.macos.identity"
     public static let defaultAccount = "static-x25519-v1"
 
     private let service: String

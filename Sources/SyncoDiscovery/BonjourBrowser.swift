@@ -4,7 +4,7 @@ import SyncoCore
 
 public actor BonjourBrowser {
     private let localDeviceID: DeviceID
-    private let queue = DispatchQueue(label: "app.synco.discovery.browser")
+    private let queue = DispatchQueue(label: "com.shkomaghdid.synco.macos.discovery.browser")
     private var browser: NWBrowser?
     private var events: AsyncStream<DiscoveryEvent>.Continuation?
     private var known: [DeviceID: DiscoveredPeer] = [:]

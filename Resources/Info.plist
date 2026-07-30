@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>Synco.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>app.synco</string>
+	<string>com.shkomaghdid.synco.macos</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

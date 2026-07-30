@@ -5,7 +5,7 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 root_dir="$(cd "$script_dir/.." && pwd)"
 
 app_name="Synco"
-bundle_id="app.synco"
+bundle_id="com.shkomaghdid.synco.macos"
 bundle_dir="$root_dir/dist/$app_name.app"
 contents_dir="$bundle_dir/Contents"
 info_plist="$root_dir/Resources/Info.plist"
@@ -25,6 +25,10 @@ printf 'APPL????' > "$contents_dir/PkgInfo"
 if [ -f "$icon_file" ]; then
     install -m 644 "$icon_file" "$contents_dir/Resources/$app_name.icns"
 fi
+
+for asset in "$root_dir"/Resources/MenuBarIcon.png; do
+    [ -f "$asset" ] && install -m 644 "$asset" "$contents_dir/Resources/$(basename "$asset")"
+done
 
 codesign --force --sign - --identifier "$bundle_id" --options runtime \
     --entitlements "$entitlements" "$bundle_dir"

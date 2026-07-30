@@ -24,7 +24,7 @@ public actor FramedConnection {
         self.connection = connection
         self.maxPayloadBytes = maxPayloadBytes
         peerDescription = String(describing: connection.endpoint)
-        queue = DispatchQueue(label: "app.synco.transport.connection")
+        queue = DispatchQueue(label: "com.shkomaghdid.synco.macos.transport.connection")
         decoder = FrameCodec.Decoder(maxPayloadBytes: maxPayloadBytes)
     }
 

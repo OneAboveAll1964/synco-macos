@@ -12,10 +12,12 @@ public final class MenuBarController: NSObject {
     private var iconLoop: ObservationLoop?
     private var pairingLoop: ObservationLoop?
     private var installedIcon: StatusItemIcon?
+    var dismissMonitor: Any?
 
     public init(viewModel: AppViewModel) {
         self.viewModel = viewModel
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        statusItem.autosaveName = "SyncoStatusItem"
         settingsWindow = SettingsWindowController(viewModel: viewModel)
         pairingWindow = PairingWindowController(viewModel: viewModel)
         super.init()
@@ -24,6 +26,7 @@ public final class MenuBarController: NSObject {
     public func install() {
         configureButton()
         configurePopover()
+
         iconLoop = ObservationLoop { [weak self] in self?.refreshStatusItem() }
         pairingLoop = ObservationLoop { [weak self] in self?.refreshPairingWindow() }
     }
@@ -35,7 +38,7 @@ public final class MenuBarController: NSObject {
         pairingLoop = nil
         pairingWindow.dismiss()
         settingsWindow.close()
-        popover.performClose(nil)
+        closePopover()
         NSStatusBar.system.removeStatusItem(statusItem)
     }
 

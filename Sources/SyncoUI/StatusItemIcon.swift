@@ -36,6 +36,10 @@ enum StatusItemIcon: String, Hashable, CaseIterable {
     }
 
     func image() -> NSImage? {
+        if let logo = MenuBarImage.logo() {
+            logo.accessibilityDescription = accessibilityDescription
+            return logo
+        }
         let image = NSImage(
             systemSymbolName: symbolName,
             accessibilityDescription: accessibilityDescription

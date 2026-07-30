@@ -2,7 +2,7 @@ import Foundation
 import os
 
 public enum SyncoLog {
-    public static let subsystem = "app.synco"
+    public static let subsystem = "com.shkomaghdid.synco.macos"
 
     public static let core = Logger(subsystem: subsystem, category: "core")
     public static let crypto = Logger(subsystem: subsystem, category: "crypto")
