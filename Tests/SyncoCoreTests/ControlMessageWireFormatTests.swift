@@ -59,7 +59,7 @@ final class ControlMessageWireFormatTests: XCTestCase {
     func testCapsWireShape() throws {
         let object = try jsonObject(.caps(ControlMessageFixtures.caps))
         XCTAssertEqual(Set(object.keys), ["t", "accepts", "sends", "maxBlob"])
-        XCTAssertEqual(object["maxBlob"] as? Int64, 104_857_600)
+        XCTAssertEqual(object["maxBlob"] as? Int64, SyncoConstants.Limits.defaultMaxBlobBytes)
         let sends = try XCTUnwrap(object["sends"] as? [String: Any])
         XCTAssertEqual(Set(sends.keys), ["text", "image", "file"])
         XCTAssertEqual(sends["file"] as? Bool, false)

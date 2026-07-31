@@ -65,7 +65,7 @@ extension SyncoConstants {
 
     public enum Limits {
         public static let inlineRepresentationMaxBytes = 65_536
-        public static let defaultMaxBlobBytes: Int64 = 104_857_600
+        public static let defaultMaxBlobBytes: Int64 = 1_073_741_824
         public static let suppressionWindowEntries = 32
     }
 
