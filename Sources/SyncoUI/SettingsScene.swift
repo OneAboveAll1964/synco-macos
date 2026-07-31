@@ -16,6 +16,8 @@ public struct SettingsScene: View {
                 TransferSettingsSection(viewModel: viewModel)
                 Divider()
                 TrustedPeerSettingsSection(viewModel: viewModel)
+                Divider()
+                AboutSection()
             }
             .padding(Theme.Spacing.section)
             .frame(width: Theme.Size.settingsWidth, alignment: .leading)

@@ -9,13 +9,22 @@ struct PeerRow: View {
     @State private var isExpanded = false
 
     var body: some View {
-        Group {
+        VStack(alignment: .leading, spacing: Theme.Spacing.small) {
             if peer.isTrusted {
-                DisclosureGroup(isExpanded: $isExpanded) {
+                Button(action: toggle) {
+                    HStack(spacing: Theme.Spacing.small) {
+                        identity
+                        Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                            .font(.system(size: Theme.Size.disclosureChevron, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(peer.displayName)
+                .accessibilityHint(isExpanded ? "Collapse settings" : "Expand settings")
+                if isExpanded {
                     PeerPolicyDisclosure(peer: peer, viewModel: viewModel)
-                        .padding(.top, Theme.Spacing.small)
-                } label: {
-                    identity
                 }
             } else {
                 HStack(spacing: Theme.Spacing.small) {
@@ -30,6 +39,10 @@ struct PeerRow: View {
             RoundedRectangle(cornerRadius: Theme.Radius.card)
                 .fill(Theme.Palette.card)
         )
+    }
+
+    private func toggle() {
+        withAnimation(.easeInOut(duration: Theme.Timing.disclosure)) { isExpanded.toggle() }
     }
 
     private var identity: some View {

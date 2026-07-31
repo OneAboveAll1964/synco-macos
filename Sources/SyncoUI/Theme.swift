@@ -28,6 +28,11 @@ enum Theme {
         static let directionSymbol: CGFloat = 17
         static let directionSymbolRow: CGFloat = 20
         static let directionLabelRow: CGFloat = 14
+        static let disclosureChevron: CGFloat = 11
+    }
+
+    enum Timing {
+        static let disclosure: Double = 0.16
     }
 
     enum Palette {
