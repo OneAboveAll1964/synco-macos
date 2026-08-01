@@ -58,6 +58,10 @@ enum ControlMessageFixtures {
         received: 8_388_608
     )
 
+    static let shizukuStart = ShizukuStartMessage()
+
+    static let shizukuStartResult = ShizukuStartResultMessage(started: false, reason: "adbMissing")
+
     static let policy = PolicyMessage(
         rev: 1_785_450_000_000,
         send: .all,
@@ -95,6 +99,8 @@ enum ControlMessageFixtures {
         .caps(caps),
         .policy(policy),
         .transferProgress(transferProgress),
+        .shizukuStart(shizukuStart),
+        .shizukuStartResult(shizukuStartResult),
         .ping(ping),
         .pong(pong),
         .clip(clip),

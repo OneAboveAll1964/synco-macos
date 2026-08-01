@@ -58,11 +58,31 @@ final class ControlMessageWireFormatTests: XCTestCase {
 
     func testCapsWireShape() throws {
         let object = try jsonObject(.caps(ControlMessageFixtures.caps))
-        XCTAssertEqual(Set(object.keys), ["t", "accepts", "sends", "maxBlob"])
+        XCTAssertEqual(Set(object.keys), ["t", "accepts", "sends", "maxBlob", "adbShizuku"])
+        XCTAssertEqual(object["adbShizuku"] as? Bool, false)
         XCTAssertEqual(object["maxBlob"] as? Int64, SyncoConstants.Limits.defaultMaxBlobBytes)
         let sends = try XCTUnwrap(object["sends"] as? [String: Any])
         XCTAssertEqual(Set(sends.keys), ["text", "image", "file"])
         XCTAssertEqual(sends["file"] as? Bool, false)
+    }
+
+    func testCapsWithoutAdbShizukuDecodesAsFalse() throws {
+        let json = Data(
+            #"{"t":"caps","accepts":{"text":true,"image":true,"file":true},"#.utf8
+        ) + Data(#""sends":{"text":true,"image":true,"file":true},"maxBlob":1024}"#.utf8)
+        guard case .caps(let caps) = try SyncoJSON.decode(json) else {
+            return XCTFail("expected a caps message")
+        }
+        XCTAssertFalse(caps.adbShizuku)
+        XCTAssertEqual(caps.maxBlob, 1024)
+    }
+
+    func testShizukuStartWireKeys() throws {
+        XCTAssertEqual(Set(try jsonObject(.shizukuStart(ControlMessageFixtures.shizukuStart)).keys), ["t"])
+        let result = try jsonObject(.shizukuStartResult(ControlMessageFixtures.shizukuStartResult))
+        XCTAssertEqual(Set(result.keys), ["t", "started", "reason"])
+        XCTAssertEqual(result["started"] as? Bool, false)
+        XCTAssertEqual(result["reason"] as? String, "adbMissing")
     }
 
     func testPingAndPongWireKeys() throws {
