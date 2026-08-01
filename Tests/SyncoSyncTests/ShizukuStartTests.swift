@@ -8,7 +8,9 @@ final class ShizukuStartTests: XCTestCase {
     func testOnlyStartedCarriesNoReason() {
         XCTAssertNil(ShizukuStartOutcome.started.reason)
         XCTAssertTrue(ShizukuStartOutcome.started.didStart)
-        for outcome in [ShizukuStartOutcome.notAllowed, .adbMissing, .noDevice, .failed] {
+        for outcome in [
+            ShizukuStartOutcome.notAllowed, .adbMissing, .noDevice, .notInstalled, .noStarter, .failed,
+        ] {
             XCTAssertFalse(outcome.didStart, outcome.rawValue)
             XCTAssertEqual(outcome.reason, outcome.rawValue)
         }
@@ -58,10 +60,24 @@ final class ShizukuStartTests: XCTestCase {
         XCTAssertEqual(result.reason, "notAllowed")
     }
 
-    func testTheStartCommandIsFixed() {
+    func testTheStarterOutputIsReadCorrectly() {
         XCTAssertEqual(
-            ShizukuStarter.startScript,
-            "/storage/emulated/0/Android/data/moe.shizuku.privileged.api/start.sh"
+            ShizukuStarter.outcome(of: "info: starter begin\ninfo: shizuku_starter exit with 0\n"),
+            .started
         )
+        XCTAssertEqual(ShizukuStarter.outcome(of: "synco-status: not-installed"), .notInstalled)
+        XCTAssertEqual(ShizukuStarter.outcome(of: "synco-status: no-starter"), .noStarter)
+        XCTAssertEqual(ShizukuStarter.outcome(of: "info: shizuku_starter exit with 1"), .failed)
+        XCTAssertEqual(ShizukuStarter.outcome(of: ""), .failed)
+    }
+
+    func testTheScriptDiscoversTheApkRatherThanHardCodingIt() {
+        let shell = ShizukuStartScript.shell
+
+        XCTAssertTrue(shell.contains("pm path moe.shizuku.privileged.api"))
+        XCTAssertTrue(shell.contains("libshizuku.so"))
+        XCTAssertTrue(shell.contains("arm64"))
+        XCTAssertTrue(shell.contains(ShizukuStartScript.legacyPath))
+        XCTAssertFalse(shell.contains("~~"))
     }
 }

@@ -22,6 +22,7 @@ public actor PairingCoordinator: PairingApprovalProviding {
 
     public func pairingDecision(for proposal: PairingProposal) async -> PairingDecision {
         guard !rejected.contains(proposal.deviceID) else { return .reject }
+        if await alreadyTrusts(proposal) { return .approve }
         await present(proposal)
         return await withTaskCancellationHandler {
             await withCheckedContinuation { (continuation: CheckedContinuation<PairingDecision, Never>) in
@@ -30,6 +31,11 @@ public actor PairingCoordinator: PairingApprovalProviding {
         } onCancel: {
             Task { await self.resolve(proposal.deviceID, decision: .reject) }
         }
+    }
+
+    private func alreadyTrusts(_ proposal: PairingProposal) async -> Bool {
+        guard let known = await settings.snapshot().peer(proposal.deviceID) else { return false }
+        return known.isUsable && known.staticPublicKey == proposal.staticPublicKey
     }
 
     public func present(_ proposal: PairingProposal) async {
