@@ -14,6 +14,8 @@ public enum ControlMessageType: String, Hashable, Sendable, CaseIterable {
     case transferEnd
     case transferAbort
     case transferProgress
+    case shizukuStart
+    case shizukuStartResult
     case ack
     case bye
 

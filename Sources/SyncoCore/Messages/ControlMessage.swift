@@ -14,6 +14,8 @@ public enum ControlMessage: Codable, Hashable, Sendable {
     case transferEnd(TransferEndMessage)
     case transferAbort(TransferAbortMessage)
     case transferProgress(TransferProgressMessage)
+    case shizukuStart(ShizukuStartMessage)
+    case shizukuStartResult(ShizukuStartResultMessage)
     case ack(AckMessage)
     case bye(ByeMessage)
     case unknown(type: String)
@@ -41,6 +43,8 @@ public enum ControlMessage: Codable, Hashable, Sendable {
         case .transferEnd: return ControlMessageType.transferEnd.rawValue
         case .transferAbort: return ControlMessageType.transferAbort.rawValue
         case .transferProgress: return ControlMessageType.transferProgress.rawValue
+        case .shizukuStart: return ControlMessageType.shizukuStart.rawValue
+        case .shizukuStartResult: return ControlMessageType.shizukuStartResult.rawValue
         case .ack: return ControlMessageType.ack.rawValue
         case .bye: return ControlMessageType.bye.rawValue
         case .unknown(let identifier): return identifier
@@ -62,6 +66,8 @@ public enum ControlMessage: Codable, Hashable, Sendable {
         case .transferEnd(let body): return body
         case .transferAbort(let body): return body
         case .transferProgress(let body): return body
+        case .shizukuStart(let body): return body
+        case .shizukuStartResult(let body): return body
         case .ack(let body): return body
         case .bye(let body): return body
         case .unknown: return nil
@@ -85,6 +91,8 @@ public enum ControlMessage: Codable, Hashable, Sendable {
         case .transferEnd: self = .transferEnd(try TransferEndMessage(from: decoder))
         case .transferAbort: self = .transferAbort(try TransferAbortMessage(from: decoder))
         case .transferProgress: self = .transferProgress(try TransferProgressMessage(from: decoder))
+        case .shizukuStart: self = .shizukuStart(try ShizukuStartMessage(from: decoder))
+        case .shizukuStartResult: self = .shizukuStartResult(try ShizukuStartResultMessage(from: decoder))
         case .ack: self = .ack(try AckMessage(from: decoder))
         case .bye: self = .bye(try ByeMessage(from: decoder))
         case .none: self = .unknown(type: identifier)

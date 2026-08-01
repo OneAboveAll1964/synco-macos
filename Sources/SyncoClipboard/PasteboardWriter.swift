@@ -26,60 +26,44 @@ public struct PasteboardWriter: Sendable {
         receivedFiles: [TransferID: URL],
         to pasteboard: NSPasteboard
     ) -> Int {
-        var payloads: [(NSPasteboard.PasteboardType, Payload)] = []
-        var fileURLs: [URL] = []
-        for representation in representations {
-            switch representation {
-            case .rtf(let bytes):
-                payloads.append((.rtf, .data(bytes)))
-            case .html(let markup):
-                payloads.append((.html, .string(markup)))
-            case .url(let link):
-                payloads.append((.URL, .string(link.url)))
-                if let title = link.title {
-                    payloads.append((PasteboardTypeMapping.urlName, .string(title)))
-                }
-            case .text(let text):
-                payloads.append((.string, .string(text)))
-            case .image(let image):
-                guard let source = receivedFiles[image.transferID],
-                      let bytes = try? Data(contentsOf: source, options: .mappedIfSafe)
-                else {
-                    continue
-                }
-                payloads.append((PasteboardTypeMapping.imageType(forMIME: image.mime), .data(bytes)))
-            case .file(let file):
-                guard let source = receivedFiles[file.transferID] else { continue }
-                fileURLs.append(source)
-            }
-        }
-        return write(payloads: payloads, fileURLs: fileURLs, to: pasteboard)
+        write(PasteboardPlan(representations, receivedFiles: receivedFiles), to: pasteboard)
     }
 
     @MainActor
-    private func write(
-        payloads: [(NSPasteboard.PasteboardType, Payload)],
-        fileURLs: [URL],
-        to pasteboard: NSPasteboard
-    ) -> Int {
-        guard !payloads.isEmpty || !fileURLs.isEmpty else { return pasteboard.changeCount }
+    private func write(_ plan: PasteboardPlan, to pasteboard: NSPasteboard) -> Int {
+        guard !plan.isEmpty else { return pasteboard.changeCount }
+        let carriesFileURLs = plan.attachments.count > 1
         var items: [NSPasteboardItem] = []
         let primary = NSPasteboardItem()
-        if let first = fileURLs.first {
-            primary.setString(first.absoluteString, forType: .fileURL)
+        if let first = plan.attachments.first {
+            attach(first, to: primary, withFileURL: carriesFileURLs)
         }
-        for (type, payload) in payloads {
+        for (type, payload) in plan.inline {
             payload.write(to: primary, type: type)
         }
         items.append(primary)
-        for source in fileURLs.dropFirst() {
+        for attachment in plan.attachments.dropFirst() {
             let item = NSPasteboardItem()
-            item.setString(source.absoluteString, forType: .fileURL)
+            attach(attachment, to: item, withFileURL: true)
             items.append(item)
         }
         pasteboard.clearContents()
         pasteboard.writeObjects(items)
         return pasteboard.changeCount
+    }
+
+    @MainActor
+    private func attach(
+        _ attachment: PasteboardAttachment,
+        to item: NSPasteboardItem,
+        withFileURL: Bool
+    ) {
+        if withFileURL || attachment.imageType == nil {
+            item.setString(attachment.url.absoluteString, forType: .fileURL)
+        }
+        if let type = attachment.imageType, let bytes = attachment.imageBytes {
+            item.setData(bytes, forType: type)
+        }
     }
 }
 
