@@ -19,6 +19,7 @@ struct TransferList: View {
                     }
                 }
             }
+            .scrollIndicators(.never)
             .frame(maxHeight: Theme.Size.transferListMaxHeight)
         }
     }

@@ -16,6 +16,7 @@ struct PeerListSection: View {
                         group("Nearby", peers: viewModel.nearbyPeers)
                     }
                 }
+                .scrollIndicators(.never)
                 .frame(maxHeight: Theme.Size.peerListMaxHeight)
             }
         }

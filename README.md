@@ -1,6 +1,6 @@
 <img src="docs/icon.png" width="120" alt="Synco">
 
-# Synco for macOS
+# Synco for macOS - Sync Clipboard Between your Mac and Android Phone
 
 One clipboard shared between your Mac and your Android phone, over your own
 network. Copy on one, paste on the other. Text, rich text, links, images and
