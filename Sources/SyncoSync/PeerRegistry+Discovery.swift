@@ -9,6 +9,7 @@ extension PeerRegistry: PeerReconnecting {
         switch event {
         case .peerAppeared(let peer), .peerChanged(let peer):
             guard peer.deviceID != localDeviceID else { return }
+            guard PeerPlatformRule.pairs(.current, peer.platform) else { return }
             discovered[peer.deviceID] = peer
         case .peerDisappeared(let deviceID):
             discovered.removeValue(forKey: deviceID)
