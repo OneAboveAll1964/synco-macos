@@ -71,6 +71,27 @@ final class ShizukuStartTests: XCTestCase {
         XCTAssertEqual(ShizukuStarter.outcome(of: ""), .failed)
     }
 
+    func testDeviceSerialsAreParsedSoASingleAdbCallIsNeverAmbiguous() {
+        let listing = """
+        List of devices attached
+        R5CY20VXXYA\tdevice
+        emulator-5554\tdevice
+        ZY22HQ8LMN\tunauthorized
+        ZY99OFFLINE\toffline
+
+        """
+
+        XCTAssertEqual(AdbDevices.serials(in: listing), ["R5CY20VXXYA", "emulator-5554"])
+        XCTAssertEqual(AdbDevices.serials(in: "List of devices attached\n\n"), [])
+    }
+
+    func testTheMostInformativeOutcomeWinsAcrossDevices() {
+        XCTAssertEqual(ShizukuStarter.preferred(.failed, .notInstalled), .notInstalled)
+        XCTAssertEqual(ShizukuStarter.preferred(.notInstalled, .noStarter), .noStarter)
+        XCTAssertEqual(ShizukuStarter.preferred(.noStarter, .failed), .noStarter)
+        XCTAssertEqual(ShizukuStarter.preferred(.notInstalled, .started), .started)
+    }
+
     func testTheScriptDiscoversTheApkRatherThanHardCodingIt() {
         let shell = ShizukuStartScript.shell
 
