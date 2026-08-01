@@ -60,6 +60,10 @@ extension AppViewModel {
         Task { self.launchAtLoginStatus = await self.commands.setLaunchAtLogin(enabled) }
     }
 
+    func refreshLaunchAtLogin() {
+        Task { self.launchAtLoginStatus = await self.commands.reconcileLaunchAtLogin() }
+    }
+
     func revealReceivedFolder() {
         FinderReveal.show(receivedDirectory)
     }

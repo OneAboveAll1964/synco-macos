@@ -37,7 +37,10 @@ struct GeneralSettingsSection: View {
                 }
             }
         }
-        .onAppear { draftName = viewModel.document.displayName }
+        .onAppear {
+            draftName = viewModel.document.displayName
+            viewModel.refreshLaunchAtLogin()
+        }
         .onChange(of: viewModel.document.displayName) { _, updated in
             draftName = updated
         }
@@ -49,7 +52,7 @@ struct GeneralSettingsSection: View {
 
     private var launchBinding: Binding<Bool> {
         Binding(
-            get: { viewModel.document.launchAtLogin },
+            get: { viewModel.launchAtLoginStatus.isOn },
             set: { viewModel.setLaunchAtLogin($0) }
         )
     }
@@ -57,7 +60,7 @@ struct GeneralSettingsSection: View {
     private var launchNote: String? {
         switch viewModel.launchAtLoginStatus {
         case .unavailable:
-            return "Launching at login needs Synco to run from Synco.app, not from a build directory."
+            return "Launching at login needs Synco to run from Synco.app in your Applications folder."
         case .requiresApproval:
             return "macOS is waiting for you to allow Synco in Login Items."
         case .enabled, .disabled:

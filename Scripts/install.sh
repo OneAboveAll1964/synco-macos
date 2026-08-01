@@ -26,25 +26,9 @@ rm -rf "$target_bundle"
 ditto "$source_bundle" "$target_bundle"
 echo "installed $target_bundle"
 
-if [ ! -t 0 ]; then
-    echo "non-interactive shell: skipping the login item"
-    exit 0
-fi
+osascript -e "tell application \"System Events\" to delete login item \"$app_name\"" \
+    >/dev/null 2>&1 || true
 
-printf 'Open %s automatically at login? [y/N] ' "$app_name"
-read -r answer
-
-case "$answer" in
-    y|Y|yes|Yes)
-        osascript -e "tell application \"System Events\" to delete login item \"$app_name\"" \
-            >/dev/null 2>&1 || true
-        osascript -e "tell application \"System Events\" to make login item at end with properties {path:\"$target_bundle\", hidden:true}" \
-            >/dev/null
-        echo "registered the login item"
-        ;;
-    *)
-        echo "skipped the login item; you can turn it on later in Synco Settings"
-        ;;
-esac
+echo "turn on \"Open at login\" in Synco Settings to start it automatically"
 
 open "$target_bundle"

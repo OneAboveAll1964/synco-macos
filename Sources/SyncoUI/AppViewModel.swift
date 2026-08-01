@@ -47,6 +47,7 @@ public final class AppViewModel {
 
     public func begin() {
         guard observation == nil else { return }
+        refreshLaunchAtLogin()
         observation = Task { [weak self] in
             guard let self else { return }
             for await updated in await self.settings.changes() {

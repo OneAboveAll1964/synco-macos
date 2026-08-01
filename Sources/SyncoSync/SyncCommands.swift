@@ -47,8 +47,16 @@ public struct SyncCommands: Sendable {
     @discardableResult
     public func setLaunchAtLogin(_ enabled: Bool) async -> LaunchAtLogin.Status {
         let status = (try? LaunchAtLogin.apply(enabled)) ?? .unavailable
-        guard status != .unavailable else { return status }
+        guard status.matches(enabled) else { return status }
         try? await settings.setLaunchAtLogin(enabled)
+        return status
+    }
+
+    @discardableResult
+    public func reconcileLaunchAtLogin() async -> LaunchAtLogin.Status {
+        let wanted = await settings.snapshot().launchAtLogin
+        let status = LaunchAtLogin.reconcile(wanted: wanted)
+        if wanted, status == .disabled { try? await settings.setLaunchAtLogin(false) }
         return status
     }
 
