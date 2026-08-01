@@ -99,7 +99,14 @@ connection.
 in Settings.
 
 **Largest file.** Anything bigger is refused in both directions. Each device has
-its own limit and the smaller of the two wins.
+its own limit and the smaller of the two wins. Pick **No limit** if you would
+rather it never refuse anything.
+
+**Starting Shizuku for a phone.** Shizuku stops every time the phone reboots,
+and starting it needs adb. Turn this on and a paired phone that is plugged in
+can ask this Mac to run that one command for it. Synco runs nothing else, and
+only devices you have already paired can ask. It needs adb on this Mac, from
+Homebrew or the Android SDK.
 
 ## Why the App Sandbox is off
 
@@ -121,6 +128,8 @@ with the hardened runtime and asks only for the network access it needs.
 
 ## Licence
 
-MIT. See [LICENSE](LICENSE).
+MIT with an attribution clause. See [LICENSE](LICENSE). You are free to use,
+change and redistribute Synco, including in your own products, as long as you
+credit the original author somewhere a user or reader can find it.
 
 Made by [OneAboveAll1964](https://github.com/OneAboveAll1964).
