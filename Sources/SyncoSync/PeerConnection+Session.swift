@@ -20,7 +20,8 @@ extension PeerConnection {
             transport: incoming,
             clipboard: clipboard,
             transfers: transfers,
-            policy: newPolicy
+            policy: newPolicy,
+            policies: policies
         )
         router = adopted
         return adopted

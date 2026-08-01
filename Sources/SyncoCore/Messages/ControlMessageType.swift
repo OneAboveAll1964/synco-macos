@@ -6,6 +6,7 @@ public enum ControlMessageType: String, Hashable, Sendable, CaseIterable {
     case pairRequest
     case pairResponse
     case caps
+    case policy
     case ping
     case pong
     case clip

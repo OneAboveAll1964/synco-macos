@@ -13,6 +13,7 @@ public actor PeerRegistry {
     let dialer: SyncoDialer
     let transfers: TransferManager
     let clipboard: any ClipboardApplying
+    let policies: PolicyExchange?
     let pairing: PairingCoordinator
     let state: SyncState
 
@@ -31,7 +32,8 @@ public actor PeerRegistry {
         transfers: TransferManager,
         clipboard: any ClipboardApplying,
         pairing: PairingCoordinator,
-        state: SyncState
+        state: SyncState,
+        policies: PolicyExchange? = nil
     ) {
         self.localDeviceID = localDeviceID
         reconciliation = PeerReconciliation(localDeviceID: localDeviceID)
@@ -42,6 +44,7 @@ public actor PeerRegistry {
         self.clipboard = clipboard
         self.pairing = pairing
         self.state = state
+        self.policies = policies
     }
 
     var driver: SessionDriver {

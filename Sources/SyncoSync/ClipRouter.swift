@@ -16,6 +16,7 @@ public actor ClipRouter {
     var pending: [ClipID: PendingInboundClip] = [:]
     var clipByTransfer: [TransferID: ClipID] = [:]
     var abortedOutgoing: Set<TransferID> = []
+    let policies: PolicyExchange?
 
     public init(
         localDeviceID: DeviceID,
@@ -23,7 +24,8 @@ public actor ClipRouter {
         transport: any ClipTransmitting,
         clipboard: any ClipboardApplying,
         transfers: TransferManager,
-        policy: SyncPolicy
+        policy: SyncPolicy,
+        policies: PolicyExchange? = nil
     ) {
         self.localDeviceID = localDeviceID
         self.peerDeviceID = peerDeviceID
@@ -31,6 +33,7 @@ public actor ClipRouter {
         self.clipboard = clipboard
         self.transfers = transfers
         self.policy = policy
+        self.policies = policies
     }
 
     public func currentPolicy() -> SyncPolicy { policy }
@@ -43,12 +46,18 @@ public actor ClipRouter {
 
     public func announceCapabilities() async throws {
         try await transport.send(.caps(policy.capsMessage))
+        if let exchange = policies {
+            try await transport.send(.policy(await exchange.outgoing(for: peerDeviceID)))
+        }
     }
 
     public func handle(_ message: ControlMessage) async -> SyncEvent? {
         switch message {
         case .caps(let caps):
             announcedCapabilities = caps
+            return nil
+        case .policy(let incoming):
+            await policies?.adopt(incoming, from: peerDeviceID)
             return nil
         case .clip(let clip):
             return await receive(clip)

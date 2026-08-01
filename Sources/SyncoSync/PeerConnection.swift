@@ -21,6 +21,7 @@ public actor PeerConnection {
     let driver: SessionDriver
     let transfers: TransferManager
     let clipboard: any ClipboardApplying
+    let policies: PolicyExchange?
 
     var policy: SyncPolicy
     var router: ClipRouter?
@@ -41,7 +42,8 @@ public actor PeerConnection {
         dialer: SyncoDialer,
         driver: SessionDriver,
         transfers: TransferManager,
-        clipboard: any ClipboardApplying
+        clipboard: any ClipboardApplying,
+        policies: PolicyExchange? = nil
     ) {
         self.deviceID = deviceID
         self.localDeviceID = localDeviceID
@@ -52,6 +54,7 @@ public actor PeerConnection {
         self.driver = driver
         self.transfers = transfers
         self.clipboard = clipboard
+        self.policies = policies
     }
 
     public nonisolated var decision: DialDecision {

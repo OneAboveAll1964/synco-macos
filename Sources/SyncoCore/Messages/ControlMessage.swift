@@ -6,6 +6,7 @@ public enum ControlMessage: Codable, Hashable, Sendable {
     case pairRequest(PairRequestMessage)
     case pairResponse(PairResponseMessage)
     case caps(CapsMessage)
+    case policy(PolicyMessage)
     case ping(PingMessage)
     case pong(PongMessage)
     case clip(ClipMessage)
@@ -31,6 +32,7 @@ public enum ControlMessage: Codable, Hashable, Sendable {
         case .pairRequest: return ControlMessageType.pairRequest.rawValue
         case .pairResponse: return ControlMessageType.pairResponse.rawValue
         case .caps: return ControlMessageType.caps.rawValue
+        case .policy: return ControlMessageType.policy.rawValue
         case .ping: return ControlMessageType.ping.rawValue
         case .pong: return ControlMessageType.pong.rawValue
         case .clip: return ControlMessageType.clip.rawValue
@@ -50,6 +52,7 @@ public enum ControlMessage: Codable, Hashable, Sendable {
         case .pairRequest(let body): return body
         case .pairResponse(let body): return body
         case .caps(let body): return body
+        case .policy(let body): return body
         case .ping(let body): return body
         case .pong(let body): return body
         case .clip(let body): return body
@@ -71,6 +74,7 @@ public enum ControlMessage: Codable, Hashable, Sendable {
         case .pairRequest: self = .pairRequest(try PairRequestMessage(from: decoder))
         case .pairResponse: self = .pairResponse(try PairResponseMessage(from: decoder))
         case .caps: self = .caps(try CapsMessage(from: decoder))
+        case .policy: self = .policy(try PolicyMessage(from: decoder))
         case .ping: self = .ping(try PingMessage(from: decoder))
         case .pong: self = .pong(try PongMessage(from: decoder))
         case .clip: self = .clip(try ClipMessage(from: decoder))

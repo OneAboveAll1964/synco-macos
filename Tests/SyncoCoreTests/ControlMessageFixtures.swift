@@ -52,6 +52,13 @@ enum ControlMessageFixtures {
         staticPublicKey: Data(repeating: 0x1A, count: 32)
     )
     static let caps = CapsMessage(accepts: .all, sends: ClipTypeFlags(text: true, image: true, file: false))
+
+    static let policy = PolicyMessage(
+        rev: 1_785_450_000_000,
+        send: .all,
+        recv: ClipTypeFlags(text: true, image: true, file: false),
+        paused: false
+    )
     static let ping = PingMessage(seq: 12)
     static let pong = PongMessage(replyingTo: ping)
     static let clip = ClipMessage(
@@ -81,6 +88,7 @@ enum ControlMessageFixtures {
         .pairRequest(pairRequest),
         .pairResponse(pairResponse),
         .caps(caps),
+        .policy(policy),
         .ping(ping),
         .pong(pong),
         .clip(clip),

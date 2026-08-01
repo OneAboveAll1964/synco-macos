@@ -24,9 +24,18 @@ struct StatusPanelHeader: View {
                 }
             }
             Spacer(minLength: 0)
-            Image(systemName: StatusItemIcon.resolved(for: summary).symbolName)
-                .font(.system(size: Theme.Size.directionSymbol))
-                .foregroundStyle(.secondary)
+            if let icon = PanelIcon.image() {
+                Image(nsImage: icon)
+                    .renderingMode(.template)
+                    .resizable()
+                    .frame(width: PanelIcon.pointSize, height: PanelIcon.pointSize)
+                    .foregroundStyle(.primary)
+                    .accessibilityHidden(true)
+            } else {
+                Image(systemName: StatusItemIcon.resolved(for: summary).symbolName)
+                    .font(.system(size: Theme.Size.directionSymbol))
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 }

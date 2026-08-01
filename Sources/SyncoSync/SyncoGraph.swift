@@ -43,7 +43,8 @@ public struct SyncoGraph: Sendable {
             transfers: transfers,
             clipboard: clipboard,
             pairing: pairing,
-            state: state
+            state: state,
+            policies: PolicyExchange(localDeviceID: identity.deviceID, settings: settings)
         )
         await pairing.attach(reconnector: registry)
         let engine = SyncEngine(

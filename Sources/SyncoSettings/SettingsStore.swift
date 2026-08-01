@@ -78,7 +78,17 @@ public actor SettingsStore {
     }
 
     public func setDirectionPolicy(_ policy: PeerDirectionPolicy, for deviceID: DeviceID) async throws {
+        var stamped = policy
+        stamped.revision = Int64(Date().timeIntervalSince1970 * 1000)
+        try await mutate { $0.peerPolicies[deviceID.rawValue] = stamped }
+    }
+
+    public func adoptDirectionPolicy(_ policy: PeerDirectionPolicy, for deviceID: DeviceID) async throws {
         try await mutate { $0.peerPolicies[deviceID.rawValue] = policy }
+    }
+
+    public func directionPolicy(for deviceID: DeviceID) -> PeerDirectionPolicy {
+        policy(for: deviceID).direction
     }
 
     public func setDefaultPeerPolicy(_ policy: PeerDirectionPolicy) async throws {

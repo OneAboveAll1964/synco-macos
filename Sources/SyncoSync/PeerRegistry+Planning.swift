@@ -14,7 +14,8 @@ extension PeerRegistry {
             dialer: dialer,
             driver: driver,
             transfers: transfers,
-            clipboard: clipboard
+            clipboard: clipboard,
+            policies: policies
         )
         connections[deviceID] = created
         return created
