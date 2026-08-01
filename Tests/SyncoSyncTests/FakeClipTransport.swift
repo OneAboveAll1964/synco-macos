@@ -50,6 +50,13 @@ actor FakeClipTransport: ClipTransmitting {
         }
     }
 
+    func shizukuResults() -> [ShizukuStartResultMessage] {
+        messages.compactMap { message in
+            guard case .shizukuStartResult(let result) = message else { return nil }
+            return result
+        }
+    }
+
     func transferAborts() -> [TransferAbortMessage] {
         messages.compactMap { message in
             guard case .transferAbort(let abort) = message else { return nil }
