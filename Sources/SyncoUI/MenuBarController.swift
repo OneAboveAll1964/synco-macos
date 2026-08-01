@@ -14,10 +14,9 @@ public final class MenuBarController: NSObject {
     private var installedIcon: StatusItemIcon?
     var dismissMonitor: Any?
 
-    public init(viewModel: AppViewModel) {
+    public init(viewModel: AppViewModel, statusItem: NSStatusItem? = nil) {
         self.viewModel = viewModel
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        statusItem.autosaveName = "SyncoStatusItem"
+        self.statusItem = statusItem ?? EarlyStatusItem.make()
         settingsWindow = SettingsWindowController(viewModel: viewModel)
         pairingWindow = PairingWindowController(viewModel: viewModel)
         super.init()

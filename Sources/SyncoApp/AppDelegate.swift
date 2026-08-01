@@ -12,6 +12,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var viewModel: AppViewModel?
     private var menuBar: MenuBarController?
     private var launchTask: Task<Void, Never>?
+    private var earlyStatusItem: NSStatusItem?
     private var isTerminating = false
 
     func applicationWillFinishLaunching(_ notification: Notification) {
@@ -32,6 +33,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        earlyStatusItem = EarlyStatusItem.make()
         launchTask = Task { await self.launch() }
     }
 
@@ -72,7 +74,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let paths = TransferPaths.shared
             let graph = try await SyncoGraph.make(paths: paths)
             let viewModel = await AppViewModel.make(graph: graph, paths: paths)
-            let menuBar = MenuBarController(viewModel: viewModel)
+            let menuBar = MenuBarController(viewModel: viewModel, statusItem: earlyStatusItem)
             viewModel.begin()
             menuBar.install()
             self.graph = graph
