@@ -7,10 +7,11 @@ enum BlobSizeOption: Int64, CaseIterable, Identifiable {
     case twoHundredFiftyMegabytes = 262_144_000
     case fiveHundredMegabytes = 524_288_000
     case oneGigabyte = 1_073_741_824
+    case unlimited = 9_223_372_036_854_775_807
 
     var id: Int64 { rawValue }
 
-    var title: String { ByteSizeText.string(rawValue) }
+    var title: String { self == .unlimited ? "No limit" : ByteSizeText.string(rawValue) }
 
     static func nearest(_ bytes: Int64) -> BlobSizeOption {
         let clamped = max(0, bytes)

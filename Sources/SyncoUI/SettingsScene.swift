@@ -15,6 +15,8 @@ public struct SettingsScene: View {
                 Divider()
                 TransferSettingsSection(viewModel: viewModel)
                 Divider()
+                ShizukuSettingsSection(viewModel: viewModel)
+                Divider()
                 TrustedPeerSettingsSection(viewModel: viewModel)
                 Divider()
                 AboutSection()

@@ -52,6 +52,10 @@ extension AppViewModel {
         Task { await self.commands.setMaxBlobBytes(maxBlobBytes) }
     }
 
+    func setAllowsAdbShizukuStart(_ allowed: Bool) {
+        Task { await self.commands.setAllowsAdbShizukuStart(allowed) }
+    }
+
     func setLaunchAtLogin(_ enabled: Bool) {
         Task { self.launchAtLoginStatus = await self.commands.setLaunchAtLogin(enabled) }
     }

@@ -40,6 +40,10 @@ public struct SyncCommands: Sendable {
         try? await settings.setMaxBlobBytes(maxBlobBytes)
     }
 
+    public func setAllowsAdbShizukuStart(_ allowed: Bool) async {
+        try? await settings.setAllowsAdbShizukuStart(allowed)
+    }
+
     @discardableResult
     public func setLaunchAtLogin(_ enabled: Bool) async -> LaunchAtLogin.Status {
         let status = (try? LaunchAtLogin.apply(enabled)) ?? .unavailable

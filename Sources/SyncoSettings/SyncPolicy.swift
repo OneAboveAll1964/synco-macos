@@ -5,17 +5,25 @@ public struct SyncPolicy: Hashable, Sendable {
     public var direction: PeerDirectionPolicy
     public var paused: Bool
     public var maxBlobBytes: Int64
+    public var allowsAdbShizukuStart: Bool
 
     public static let `default` = SyncPolicy(
         direction: .bidirectional,
         paused: false,
-        maxBlobBytes: SyncoConstants.Limits.defaultMaxBlobBytes
+        maxBlobBytes: SyncoConstants.Limits.defaultMaxBlobBytes,
+        allowsAdbShizukuStart: false
     )
 
-    public init(direction: PeerDirectionPolicy, paused: Bool, maxBlobBytes: Int64) {
+    public init(
+        direction: PeerDirectionPolicy,
+        paused: Bool,
+        maxBlobBytes: Int64,
+        allowsAdbShizukuStart: Bool = false
+    ) {
         self.direction = direction
         self.paused = paused
         self.maxBlobBytes = maxBlobBytes
+        self.allowsAdbShizukuStart = allowsAdbShizukuStart
     }
 
     public var effectiveSendFlags: ClipTypeFlags { paused ? .none : direction.send }
@@ -26,7 +34,8 @@ public struct SyncPolicy: Hashable, Sendable {
         CapsMessage(
             accepts: effectiveReceiveFlags,
             sends: effectiveSendFlags,
-            maxBlob: maxBlobBytes
+            maxBlob: maxBlobBytes,
+            adbShizuku: allowsAdbShizukuStart
         )
     }
 

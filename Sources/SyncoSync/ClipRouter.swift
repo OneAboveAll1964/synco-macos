@@ -17,6 +17,7 @@ public actor ClipRouter {
     var clipByTransfer: [TransferID: ClipID] = [:]
     var abortedOutgoing: Set<TransferID> = []
     let policies: PolicyExchange?
+    let shizuku: ShizukuStarter
     var reports = PeerProgressReports()
 
     public init(
@@ -26,7 +27,8 @@ public actor ClipRouter {
         clipboard: any ClipboardApplying,
         transfers: TransferManager,
         policy: SyncPolicy,
-        policies: PolicyExchange? = nil
+        policies: PolicyExchange? = nil,
+        shizuku: ShizukuStarter = ShizukuStarter()
     ) {
         self.localDeviceID = localDeviceID
         self.peerDeviceID = peerDeviceID
@@ -35,6 +37,7 @@ public actor ClipRouter {
         self.transfers = transfers
         self.policy = policy
         self.policies = policies
+        self.shizuku = shizuku
     }
 
     public func currentPolicy() -> SyncPolicy { policy }
@@ -59,6 +62,9 @@ public actor ClipRouter {
             return nil
         case .policy(let incoming):
             await policies?.adopt(incoming, from: peerDeviceID)
+            return nil
+        case .shizukuStart:
+            await startShizukuOverAdb()
             return nil
         case .transferProgress(let report):
             await transfers.reportPeerProgress(report.transferId, received: report.received)

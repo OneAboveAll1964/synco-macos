@@ -109,6 +109,10 @@ public actor SettingsStore {
         try await mutate { $0.maxBlobBytes = clamped }
     }
 
+    public func setAllowsAdbShizukuStart(_ allowed: Bool) async throws {
+        try await mutate { $0.allowsAdbShizukuStart = allowed }
+    }
+
     public func setLaunchAtLogin(_ enabled: Bool) async throws {
         try await mutate { $0.launchAtLogin = enabled }
     }

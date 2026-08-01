@@ -9,6 +9,7 @@ public struct SettingsDocument: Codable, Hashable, Sendable {
     public var launchAtLogin: Bool
     public var paused: Bool
     public var maxBlobBytes: Int64
+    public var allowsAdbShizukuStart: Bool
     public var defaultPeerPolicy: PeerDirectionPolicy
     public var peers: [TrustedPeerRecord]
     public var peerPolicies: [String: PeerDirectionPolicy]
@@ -19,6 +20,7 @@ public struct SettingsDocument: Codable, Hashable, Sendable {
         launchAtLogin: Bool = false,
         paused: Bool = false,
         maxBlobBytes: Int64 = SyncoConstants.Limits.defaultMaxBlobBytes,
+        allowsAdbShizukuStart: Bool = false,
         defaultPeerPolicy: PeerDirectionPolicy = .bidirectional,
         peers: [TrustedPeerRecord] = [],
         peerPolicies: [String: PeerDirectionPolicy] = [:]
@@ -28,6 +30,7 @@ public struct SettingsDocument: Codable, Hashable, Sendable {
         self.launchAtLogin = launchAtLogin
         self.paused = paused
         self.maxBlobBytes = maxBlobBytes
+        self.allowsAdbShizukuStart = allowsAdbShizukuStart
         self.defaultPeerPolicy = defaultPeerPolicy
         self.peers = peers
         self.peerPolicies = peerPolicies
@@ -49,7 +52,8 @@ public struct SettingsDocument: Codable, Hashable, Sendable {
         SyncPolicy(
             direction: directionPolicy(for: deviceID),
             paused: paused,
-            maxBlobBytes: maxBlobBytes
+            maxBlobBytes: maxBlobBytes,
+            allowsAdbShizukuStart: allowsAdbShizukuStart
         )
     }
 
@@ -76,6 +80,7 @@ public struct SettingsDocument: Codable, Hashable, Sendable {
         case launchAtLogin
         case paused
         case maxBlobBytes
+        case allowsAdbShizukuStart
         case defaultPeerPolicy
         case peers
         case peerPolicies
