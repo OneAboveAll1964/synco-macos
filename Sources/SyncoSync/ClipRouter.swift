@@ -17,6 +17,7 @@ public actor ClipRouter {
     var clipByTransfer: [TransferID: ClipID] = [:]
     var abortedOutgoing: Set<TransferID> = []
     let policies: PolicyExchange?
+    var reports = PeerProgressReports()
 
     public init(
         localDeviceID: DeviceID,
@@ -58,6 +59,9 @@ public actor ClipRouter {
             return nil
         case .policy(let incoming):
             await policies?.adopt(incoming, from: peerDeviceID)
+            return nil
+        case .transferProgress(let report):
+            await transfers.reportPeerProgress(report.transferId, received: report.received)
             return nil
         case .clip(let clip):
             return await receive(clip)

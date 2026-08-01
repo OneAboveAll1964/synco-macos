@@ -79,6 +79,10 @@ public actor TransferManager {
         try await outgoing.nextChunk(transferID)
     }
 
+    public func reportPeerProgress(_ transferID: TransferID, received: Int64) async {
+        await outgoing.reportPeerProgress(transferID, received: received)
+    }
+
     public func abortOutgoing(_ transferID: TransferID, reason: ClipRejectionReason) async {
         await outgoing.abort(transferID, reason: reason)
     }

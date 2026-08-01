@@ -82,6 +82,18 @@ public actor OutgoingTransferRegistry {
         }
     }
 
+    func reportPeerProgress(_ transferID: TransferID, received: Int64) async {
+        guard let transfer = transfers[transferID] else { return }
+        await progress.publish(
+            TransferProgress(
+                descriptor: transfer.descriptor,
+                direction: .outgoing,
+                transferredBytes: received,
+                state: .active
+            )
+        )
+    }
+
     private func publish(_ descriptor: TransferDescriptor, state: TransferProgress.State) async {
         await progress.publish(
             TransferProgress(

@@ -63,6 +63,18 @@ Use the packaged app rather than the bare binary. macOS only grants local networ
 access and login-item registration to a proper app bundle, and a loose executable
 is not registered with the system, so its menu bar icon is unreliable.
 
+## Installing a release build
+
+The app is signed ad hoc rather than with a paid Apple Developer ID, so the first
+launch needs one extra step. Unzip it, drag `Synco.app` to `/Applications`, then
+right-click it and choose **Open**. Confirm once and macOS remembers.
+
+If it still refuses, clear the quarantine flag:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/Synco.app
+```
+
 ## First run
 
 1. Open Synco on the Mac and on the phone.

@@ -7,6 +7,14 @@ extension ClipRouter {
         guard let clipID = clipByTransfer[chunk.transferID] else { return nil }
         do {
             try await transfers.acceptChunk(chunk)
+            if reports.shouldReport(chunk.transferID) {
+                let received = Int64(chunk.offset) + Int64(chunk.data.count)
+                try? await transport.send(
+                    .transferProgress(
+                        TransferProgressMessage(transferId: chunk.transferID, received: received)
+                    )
+                )
+            }
             return nil
         } catch {
             return await failClip(

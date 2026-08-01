@@ -13,6 +13,7 @@ public enum ControlMessage: Codable, Hashable, Sendable {
     case transferStart(TransferStartMessage)
     case transferEnd(TransferEndMessage)
     case transferAbort(TransferAbortMessage)
+    case transferProgress(TransferProgressMessage)
     case ack(AckMessage)
     case bye(ByeMessage)
     case unknown(type: String)
@@ -39,6 +40,7 @@ public enum ControlMessage: Codable, Hashable, Sendable {
         case .transferStart: return ControlMessageType.transferStart.rawValue
         case .transferEnd: return ControlMessageType.transferEnd.rawValue
         case .transferAbort: return ControlMessageType.transferAbort.rawValue
+        case .transferProgress: return ControlMessageType.transferProgress.rawValue
         case .ack: return ControlMessageType.ack.rawValue
         case .bye: return ControlMessageType.bye.rawValue
         case .unknown(let identifier): return identifier
@@ -59,6 +61,7 @@ public enum ControlMessage: Codable, Hashable, Sendable {
         case .transferStart(let body): return body
         case .transferEnd(let body): return body
         case .transferAbort(let body): return body
+        case .transferProgress(let body): return body
         case .ack(let body): return body
         case .bye(let body): return body
         case .unknown: return nil
@@ -81,6 +84,7 @@ public enum ControlMessage: Codable, Hashable, Sendable {
         case .transferStart: self = .transferStart(try TransferStartMessage(from: decoder))
         case .transferEnd: self = .transferEnd(try TransferEndMessage(from: decoder))
         case .transferAbort: self = .transferAbort(try TransferAbortMessage(from: decoder))
+        case .transferProgress: self = .transferProgress(try TransferProgressMessage(from: decoder))
         case .ack: self = .ack(try AckMessage(from: decoder))
         case .bye: self = .bye(try ByeMessage(from: decoder))
         case .none: self = .unknown(type: identifier)

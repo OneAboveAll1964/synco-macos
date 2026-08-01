@@ -13,6 +13,7 @@ public enum ControlMessageType: String, Hashable, Sendable, CaseIterable {
     case transferStart
     case transferEnd
     case transferAbort
+    case transferProgress
     case ack
     case bye
 

@@ -53,6 +53,11 @@ enum ControlMessageFixtures {
     )
     static let caps = CapsMessage(accepts: .all, sends: ClipTypeFlags(text: true, image: true, file: false))
 
+    static let transferProgress = TransferProgressMessage(
+        transferId: TransferID(uuid: UUID(uuidString: "5f1b8f2a-0000-4000-8000-00000000ab01")!),
+        received: 8_388_608
+    )
+
     static let policy = PolicyMessage(
         rev: 1_785_450_000_000,
         send: .all,
@@ -89,6 +94,7 @@ enum ControlMessageFixtures {
         .pairResponse(pairResponse),
         .caps(caps),
         .policy(policy),
+        .transferProgress(transferProgress),
         .ping(ping),
         .pong(pong),
         .clip(clip),
