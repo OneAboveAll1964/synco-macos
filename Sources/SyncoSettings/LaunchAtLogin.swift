@@ -1,5 +1,5 @@
+import AppKit
 import Foundation
-import ServiceManagement
 import SyncoCore
 
 public enum LaunchAtLogin {
@@ -19,53 +19,45 @@ public enum LaunchAtLogin {
 
     public static var status: Status {
         guard isSupported else { return .unavailable }
-        return mapped(SMAppService.mainApp.status)
+        return LoginAgent.isInstalled() ? .enabled : .disabled
     }
 
     @discardableResult
     public static func apply(_ enabled: Bool) throws -> Status {
-        guard isSupported else {
+        guard isSupported, let executable = Bundle.main.executableURL else {
             SyncoLog.settings.notice("launch at login is unavailable outside an app bundle")
             return .unavailable
         }
-        let service = SMAppService.mainApp
         do {
             if enabled {
-                guard service.status != .enabled else { return .enabled }
-                try service.register()
+                try LoginAgent.install(executable: executable)
             } else {
-                guard service.status != .notRegistered else { return .disabled }
-                try service.unregister()
+                try LoginAgent.remove()
             }
         } catch {
-            SyncoLog.settings.error("launch at login update failed: \(error.localizedDescription, privacy: .public)")
+            SyncoLog.settings.error(
+                "launch at login update failed: \(error.localizedDescription, privacy: .public)"
+            )
             throw error
         }
-        return mapped(service.status)
+        return status
     }
 
     public static func reconcile(wanted: Bool) -> Status {
         guard isSupported else { return .unavailable }
         let current = status
-        guard wanted else { return current }
-        guard current == .disabled else { return current }
+        guard wanted, current == .disabled else { return current }
         SyncoLog.settings.notice("re-registering Synco for launch at login after an update")
         return (try? apply(true)) ?? current
     }
 
     public static func openLoginItemsSettings() {
-        guard isSupported else { return }
-        SMAppService.openSystemSettingsLoginItems()
-    }
-
-    private static func mapped(_ status: SMAppService.Status) -> Status {
-        switch status {
-        case .enabled: return .enabled
-        case .notRegistered: return .disabled
-        case .requiresApproval: return .requiresApproval
-        case .notFound: return .unavailable
-        @unknown default: return .unavailable
+        guard let settings = URL(
+            string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
+        ) else {
+            return
         }
+        NSWorkspace.shared.open(settings)
     }
 }
 

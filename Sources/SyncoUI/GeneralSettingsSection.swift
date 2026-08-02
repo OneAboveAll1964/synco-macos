@@ -60,7 +60,7 @@ struct GeneralSettingsSection: View {
     private var launchNote: String? {
         switch viewModel.launchAtLoginStatus {
         case .unavailable:
-            return "Launching at login needs Synco to run from Synco.app in your Applications folder."
+            return "Launching at login needs Synco to run from Synco.app, not from a loose binary."
         case .requiresApproval:
             return "macOS is waiting for you to allow Synco in Login Items."
         case .enabled, .disabled:
