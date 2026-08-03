@@ -43,6 +43,7 @@ struct PeerPolicyDisclosure: View {
                     .foregroundStyle(.secondary)
                     .textSelection(.enabled)
             }
+            PeerForgetButton(peer: peer, viewModel: viewModel)
         }
     }
 
