@@ -89,8 +89,9 @@ public actor PairingCoordinator: PairingApprovalProviding {
     }
 
     private func resolve(_ deviceID: DeviceID, decision: PairingDecision) async {
-        guard let waiter = waiters.removeValue(forKey: deviceID) else { return }
+        proposals.removeValue(forKey: deviceID)
         await state.dismissPairing(deviceID)
+        guard let waiter = waiters.removeValue(forKey: deviceID) else { return }
         waiter.resume(returning: decision)
     }
 }
