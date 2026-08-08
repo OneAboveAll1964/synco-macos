@@ -69,11 +69,6 @@ public final class H264Encoder: @unchecked Sendable {
         }
     }
 
-    public func forceKeyframe() {
-        guard let session else { return }
-        VTSessionSetProperty(session, key: kVTEncodeFrameOptionKey_ForceKeyFrame, value: kCFBooleanTrue)
-    }
-
     public func stop() {
         guard let session else { return }
         VTCompressionSessionCompleteFrames(session, untilPresentationTimeStamp: .invalid)

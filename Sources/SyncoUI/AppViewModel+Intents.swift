@@ -1,5 +1,6 @@
 import Foundation
 import SyncoCore
+import SyncoPower
 import SyncoSettings
 import SyncoSync
 
@@ -70,6 +71,17 @@ extension AppViewModel {
 
     func setAllowsAdbShizukuStart(_ allowed: Bool) {
         Task { await self.commands.setAllowsAdbShizukuStart(allowed) }
+    }
+
+    func setKeepAwake(_ enabled: Bool) {
+        SleepGuard.shared.apply(enabled)
+        if !enabled, document.keepAwakeWithLidClosed { _ = ClamshellRequest.apply(false) }
+        Task { await self.commands.setKeepAwake(enabled) }
+    }
+
+    func setKeepAwakeWithLidClosed(_ enabled: Bool) {
+        guard ClamshellRequest.apply(enabled) != .declined else { return }
+        Task { await self.commands.setKeepAwakeWithLidClosed(enabled) }
     }
 
     func setLaunchAtLogin(_ enabled: Bool) {

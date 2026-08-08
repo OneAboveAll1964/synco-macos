@@ -24,6 +24,10 @@ public final class RemoteInputInjector {
             button(event.button ?? "left", down: event.down ?? false)
         case "s":
             scroll(dx: event.dx ?? 0, dy: event.dy ?? 0)
+        case "z":
+            magnify(scale: event.scale ?? 1)
+        case "k":
+            key(usage: event.code ?? 0, mods: event.mods ?? 0, down: event.down ?? true)
         case "txt":
             type(event.text ?? "")
         default:
@@ -54,6 +58,32 @@ public final class RemoteInputInjector {
         ) else {
             return
         }
+        event.post(tap: .cghidEventTap)
+    }
+
+    private func magnify(scale: Double) {
+        let steps = Int32(((scale - 1) * 40).rounded())
+        guard steps != 0, let event = CGEvent(
+            scrollWheelEvent2Source: nil,
+            units: .pixel,
+            wheelCount: 1,
+            wheel1: steps,
+            wheel2: 0,
+            wheel3: 0
+        ) else {
+            return
+        }
+        event.flags = .maskCommand
+        event.post(tap: .cghidEventTap)
+    }
+
+    private func key(usage: Int, mods: Int, down: Bool) {
+        guard let code = HidKeyMap.virtualKey(forUsage: usage),
+              let event = CGEvent(keyboardEventSource: nil, virtualKey: code, keyDown: down)
+        else {
+            return
+        }
+        event.flags = HidKeyMap.flags(forModifiers: mods)
         event.post(tap: .cghidEventTap)
     }
 

@@ -13,6 +13,8 @@ public struct SettingsScene: View {
             VStack(alignment: .leading, spacing: Theme.Spacing.section) {
                 GeneralSettingsSection(viewModel: viewModel)
                 Divider()
+                AwakeSettingsSection(viewModel: viewModel)
+                Divider()
                 TransferSettingsSection(viewModel: viewModel)
                 Divider()
                 ShizukuSettingsSection(viewModel: viewModel)

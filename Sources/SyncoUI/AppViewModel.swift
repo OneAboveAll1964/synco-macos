@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import SyncoCore
+import SyncoPower
 import SyncoSettings
 import SyncoSync
 import SyncoTransfer
@@ -54,6 +55,7 @@ public final class AppViewModel {
     public func begin() {
         guard observation == nil else { return }
         refreshLaunchAtLogin()
+        SleepGuard.shared.apply(document.keepAwake)
         observation = Task { [weak self] in
             guard let self else { return }
             for await updated in await self.settings.changes() {
@@ -69,6 +71,7 @@ public final class AppViewModel {
     }
 
     public func end() {
+        SleepGuard.shared.release()
         clipsLoop?.cancel()
         clipsLoop = nil
         observation?.cancel()
@@ -101,5 +104,6 @@ public final class AppViewModel {
     private func apply(_ updated: SettingsDocument) {
         document = updated
         launchAtLoginStatus = LaunchAtLogin.status
+        SleepGuard.shared.apply(updated.keepAwake)
     }
 }

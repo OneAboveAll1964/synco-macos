@@ -113,6 +113,17 @@ public actor SettingsStore {
         try await mutate { $0.allowsAdbShizukuStart = allowed }
     }
 
+    public func setKeepAwake(_ enabled: Bool) async throws {
+        try await mutate {
+            $0.keepAwake = enabled
+            if !enabled { $0.keepAwakeWithLidClosed = false }
+        }
+    }
+
+    public func setKeepAwakeWithLidClosed(_ enabled: Bool) async throws {
+        try await mutate { $0.keepAwakeWithLidClosed = enabled }
+    }
+
     public func setLaunchAtLogin(_ enabled: Bool) async throws {
         try await mutate { $0.launchAtLogin = enabled }
     }

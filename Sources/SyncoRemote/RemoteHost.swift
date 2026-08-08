@@ -42,10 +42,8 @@ public actor RemoteHost {
     }
 
     private func beginCapture(request: RemoteStartMessage, input: Bool) async throws {
-        let probe = ScreenCapture { _, _ in }
-        try await probe.start(maxWidth: request.maxWidth, maxHeight: request.maxHeight, fps: request.fps)
-        let size = probe.size
-        await probe.stop()
+        let plan = try await ScreenCapture.plan(maxWidth: request.maxWidth, maxHeight: request.maxHeight)
+        let size = plan.size
 
         let encoder = H264Encoder(width: size.width, height: size.height, fps: request.fps) { [weak self] picture in
             Task { await self?.onEncoded(picture) }
@@ -58,7 +56,7 @@ public actor RemoteHost {
         self.capture = capture
         self.encoder = encoder
         if input {
-            injector = await RemoteInputInjector(bounds: mainDisplayBounds())
+            injector = await RemoteInputInjector(bounds: plan.bounds)
         }
         active = true
         seq = 0
@@ -91,10 +89,5 @@ public actor RemoteHost {
         for frame in fragmenter.fragments(for: picture, seq: seq) {
             await delegate?.remoteHost(self, didProduce: frame)
         }
-    }
-
-    @MainActor
-    private func mainDisplayBounds() -> CGRect {
-        CGDisplayBounds(CGMainDisplayID())
     }
 }

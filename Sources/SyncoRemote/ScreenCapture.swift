@@ -1,3 +1,4 @@
+import CoreGraphics
 import CoreMedia
 import Foundation
 import ScreenCaptureKit
@@ -9,6 +10,16 @@ public struct RemoteScreenSize: Sendable, Hashable {
     public init(width: Int, height: Int) {
         self.width = width
         self.height = height
+    }
+}
+
+public struct RemoteDisplayPlan: Sendable {
+    public let size: RemoteScreenSize
+    public let bounds: CGRect
+
+    public init(size: RemoteScreenSize, bounds: CGRect) {
+        self.size = size
+        self.bounds = bounds
     }
 }
 
@@ -32,6 +43,17 @@ public final class ScreenCapture: NSObject, SCStreamOutput, @unchecked Sendable 
         let width = Int((Double(display.width) * scale).rounded(.down)) & ~1
         let height = Int((Double(display.height) * scale).rounded(.down)) & ~1
         return RemoteScreenSize(width: max(2, width), height: max(2, height))
+    }
+
+    public static func plan(maxWidth: Int, maxHeight: Int) async throws -> RemoteDisplayPlan {
+        let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
+        guard let display = content.displays.first else {
+            throw RemoteCaptureError.noDisplay
+        }
+        return RemoteDisplayPlan(
+            size: fittedSize(display: display, maxWidth: maxWidth, maxHeight: maxHeight),
+            bounds: CGDisplayBounds(display.displayID)
+        )
     }
 
     public func start(maxWidth: Int, maxHeight: Int, fps: Int) async throws {

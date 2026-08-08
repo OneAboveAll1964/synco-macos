@@ -97,6 +97,7 @@ public actor ClipRouter {
     }
 
     public func reset() async {
+        await remote.stop()
         for (transferID, clipID) in clipByTransfer {
             await transfers.abortIncoming(transferID, reason: .userCancelled)
             pending.removeValue(forKey: clipID)
