@@ -98,6 +98,65 @@ final class ClipRouterTransferTests: XCTestCase {
         XCTAssertEqual(aborts.first?.transferID, transferID)
     }
 
+    func testAppliesTheSurvivingRepresentationsWhenOneTransferFails() async throws {
+        let environment = ClipRouterEnvironment()
+        defer { environment.tearDown() }
+        let measurement = FileMeasurement(data: payload)
+        let transferID = TransferID()
+        let clip = environment.incomingClip([
+            .image(ClipImageRepresentation(
+                mime: "image/png",
+                name: "shot.png",
+                size: measurement.size,
+                sha256: measurement.sha256,
+                transferID: transferID
+            )),
+            .text("caption"),
+        ])
+
+        _ = await environment.router.handle(.clip(clip))
+        _ = await environment.router.handle(
+            .transferStart(Self.start(for: clip, measurement: measurement, transferID: transferID))
+        )
+        let outcome = await environment.router.handle(
+            .transferEnd(TransferEndMessage(transferID: transferID, ok: false))
+        )
+
+        let applied = await environment.clipboard.appliedClips()
+        let acks = await environment.transport.acks()
+        XCTAssertEqual(outcome?.kind, .clipReceived)
+        XCTAssertEqual(applied.first?.representations, [.text("caption")])
+        XCTAssertEqual(acks.first?.applied, true)
+    }
+
+    func testStillRejectsWhenEveryRepresentationDependedOnTheFailedTransfer() async throws {
+        let environment = ClipRouterEnvironment()
+        defer { environment.tearDown() }
+        let measurement = FileMeasurement(data: payload)
+        let transferID = TransferID()
+        let clip = environment.incomingClip([
+            .file(ClipFileRepresentation(
+                mime: "application/pdf",
+                name: "doc.pdf",
+                size: measurement.size,
+                sha256: measurement.sha256,
+                transferID: transferID
+            )),
+        ])
+
+        _ = await environment.router.handle(.clip(clip))
+        _ = await environment.router.handle(
+            .transferStart(Self.start(for: clip, measurement: measurement, transferID: transferID))
+        )
+        let outcome = await environment.router.handle(
+            .transferEnd(TransferEndMessage(transferID: transferID, ok: false))
+        )
+
+        let applied = await environment.clipboard.appliedClips()
+        XCTAssertEqual(outcome?.kind, .clipRejected(.userCancelled))
+        XCTAssertTrue(applied.isEmpty)
+    }
+
     private static func start(
         for clip: ClipMessage,
         measurement: FileMeasurement,

@@ -67,17 +67,25 @@ extension ClipRouter {
             )
             return nil
         } catch {
-            return await failClip(
-                start.clipID,
-                reason: TransferFailureReason.reason(for: error),
-                announcing: start.transferID
+            try? await transport.send(
+                .transferAbort(TransferAbortMessage(
+                    transferID: start.transferID,
+                    reason: TransferFailureReason.reason(for: error)
+                ))
+            )
+            return await failTransfer(
+                start.transferID,
+                clipID: start.clipID,
+                reason: TransferFailureReason.reason(for: error)
             )
         }
     }
 
     func finishIncoming(_ end: TransferEndMessage) async -> SyncEvent? {
         guard let clipID = clipByTransfer[end.transferID] else { return nil }
-        guard end.ok else { return await failClip(clipID, reason: .userCancelled, announcing: nil) }
+        guard end.ok else {
+            return await failTransfer(end.transferID, clipID: clipID, reason: .userCancelled)
+        }
         do {
             let destination = try await transfers.completeIncoming(end.transferID)
             clipByTransfer.removeValue(forKey: end.transferID)
@@ -87,10 +95,10 @@ extension ClipRouter {
             guard entry.isSatisfied else { return nil }
             return await applyPending(entry)
         } catch {
-            return await failClip(
-                clipID,
-                reason: TransferFailureReason.reason(for: error),
-                announcing: nil
+            return await failTransfer(
+                end.transferID,
+                clipID: clipID,
+                reason: TransferFailureReason.reason(for: error)
             )
         }
     }
@@ -99,6 +107,20 @@ extension ClipRouter {
         abortedOutgoing.insert(message.transferID)
         await transfers.abortOutgoing(message.transferID, reason: message.reason)
         guard let clipID = clipByTransfer[message.transferID] else { return nil }
-        return await failClip(clipID, reason: message.reason, announcing: nil)
+        return await failTransfer(message.transferID, clipID: clipID, reason: message.reason)
+    }
+
+    private func failTransfer(
+        _ transferID: TransferID,
+        clipID: ClipID,
+        reason: ClipRejectionReason
+    ) async -> SyncEvent? {
+        await transfers.abortIncoming(transferID, reason: reason)
+        clipByTransfer.removeValue(forKey: transferID)
+        guard var entry = pending[clipID] else { return nil }
+        entry.fail(transferID, reason: reason)
+        pending[clipID] = entry
+        guard entry.isSatisfied else { return nil }
+        return await applyPending(entry)
     }
 }

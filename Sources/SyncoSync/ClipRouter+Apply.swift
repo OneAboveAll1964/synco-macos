@@ -4,6 +4,11 @@ import SyncoCore
 extension ClipRouter {
     func applyPending(_ entry: PendingInboundClip) async -> SyncEvent? {
         forget(entry)
+        guard entry.hasUsableContent else {
+            let reason = entry.failureReason ?? .userCancelled
+            await respond(clipID: entry.clip.id, applied: false, reason: reason)
+            return event(.clipRejected(reason), clipID: entry.clip.id)
+        }
         guard await clipboard.apply(entry.message, receivedFiles: entry.received) else {
             await respond(clipID: entry.clip.id, applied: false, reason: .userCancelled)
             return event(.clipRejected(.userCancelled), clipID: entry.clip.id)
@@ -44,6 +49,9 @@ extension ClipRouter {
             clipByTransfer.removeValue(forKey: transferID)
         }
         for transferID in entry.received.keys {
+            clipByTransfer.removeValue(forKey: transferID)
+        }
+        for transferID in entry.failed {
             clipByTransfer.removeValue(forKey: transferID)
         }
     }
