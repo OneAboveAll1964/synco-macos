@@ -14,9 +14,13 @@ extension MenuBarController {
         let controller = NSHostingController(
             rootView: StatusPanel(
                 viewModel: viewModel,
-                openSettings: { [weak self] in self?.openSettings() },
-                pairByQR: { [weak self] in self?.openQRPairing() },
-                quit: { NSApp.terminate(nil) }
+                actions: StatusPanelActions(
+                    sendText: { [weak self] in self?.openSendText() },
+                    sendFiles: { [weak self] in self?.openSendFiles() },
+                    pairByQR: { [weak self] in self?.openQRPairing() },
+                    openSettings: { [weak self] in self?.openSettings() },
+                    quit: { NSApp.terminate(nil) }
+                )
             )
         )
         controller.sizingOptions = [.preferredContentSize]
@@ -43,6 +47,18 @@ extension MenuBarController {
     public func closePopover() {
         stopDismissMonitor()
         popover.performClose(nil)
+    }
+
+    func openSendText() {
+        closePopover()
+        sendTextWindow.present()
+    }
+
+    func openSendFiles() {
+        closePopover()
+        SendFilePicker.present { [viewModel] urls in
+            viewModel.sendFiles(urls)
+        }
     }
 
     func openQRPairing() {

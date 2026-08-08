@@ -1,4 +1,5 @@
 import Foundation
+import SyncoClipboard
 import SyncoCore
 import SyncoCrypto
 import SyncoSettings
@@ -9,19 +10,36 @@ public struct SyncCommands: Sendable {
     let pairing: PairingCoordinator
     let settings: SettingsStore
     let identity: DeviceIdentity
+    let manual: ManualClips
+    let history: ClipHistoryStore
 
     init(
         engine: SyncEngine,
         registry: PeerRegistry,
         pairing: PairingCoordinator,
         settings: SettingsStore,
-        identity: DeviceIdentity
+        identity: DeviceIdentity,
+        manual: ManualClips,
+        history: ClipHistoryStore
     ) {
         self.engine = engine
         self.registry = registry
         self.pairing = pairing
         self.settings = settings
         self.identity = identity
+        self.manual = manual
+        self.history = history
+    }
+
+    public func sendText(_ value: String) async {
+        guard let clip = manual.text(value) else { return }
+        await history.record(representations: clip.representations, fromPeer: false)
+        await registry.broadcast(clip)
+    }
+
+    public func sendFiles(_ urls: [URL]) async {
+        guard let clip = manual.files(urls) else { return }
+        await registry.broadcast(clip)
     }
 
     public func beginQRPairing() async -> QRPairingCode? {

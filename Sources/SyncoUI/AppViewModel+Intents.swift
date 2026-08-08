@@ -40,6 +40,14 @@ extension AppViewModel {
     }
 
 
+    func sendText(_ value: String) {
+        Task { await self.commands.sendText(value) }
+    }
+
+    func sendFiles(_ urls: [URL]) {
+        Task { await self.commands.sendFiles(urls) }
+    }
+
     func beginPairing(with deviceID: DeviceID) {
         Task { await self.commands.beginPairing(with: deviceID) }
     }

@@ -10,6 +10,7 @@ public final class MenuBarController: NSObject {
 
     private let pairingWindow: PairingWindowController
     let qrWindow: QRPairingWindow
+    let sendTextWindow: SendTextWindow
     private var iconLoop: ObservationLoop?
     private var pairingLoop: ObservationLoop?
     private var installedIcon: StatusItemIcon?
@@ -21,6 +22,7 @@ public final class MenuBarController: NSObject {
         settingsWindow = SettingsWindowController(viewModel: viewModel)
         pairingWindow = PairingWindowController(viewModel: viewModel)
         qrWindow = QRPairingWindow()
+        sendTextWindow = SendTextWindow(viewModel: viewModel)
         super.init()
     }
 
@@ -39,6 +41,7 @@ public final class MenuBarController: NSObject {
         pairingLoop = nil
         pairingWindow.dismiss()
         qrWindow.dismiss()
+        sendTextWindow.dismiss()
         settingsWindow.close()
         closePopover()
         NSStatusBar.system.removeStatusItem(statusItem)

@@ -4,20 +4,11 @@ import SyncoSync
 @MainActor
 public struct StatusPanel: View {
     let viewModel: AppViewModel
-    let openSettings: () -> Void
-    let pairByQR: () -> Void
-    let quit: () -> Void
+    let actions: StatusPanelActions
 
-    public init(
-        viewModel: AppViewModel,
-        openSettings: @escaping () -> Void,
-        pairByQR: @escaping () -> Void,
-        quit: @escaping () -> Void
-    ) {
+    public init(viewModel: AppViewModel, actions: StatusPanelActions) {
         self.viewModel = viewModel
-        self.openSettings = openSettings
-        self.pairByQR = pairByQR
-        self.quit = quit
+        self.actions = actions
     }
 
     public var body: some View {
@@ -29,6 +20,7 @@ public struct StatusPanel: View {
             DirectionControl(selection: viewModel.directionChoice) { choice in
                 viewModel.setDirectionChoice(choice)
             }
+            ActionRow(actions: actions)
             Divider()
             PeerListSection(viewModel: viewModel)
             if !viewModel.clips.isEmpty {
@@ -42,7 +34,7 @@ public struct StatusPanel: View {
                 }
             }
             Divider()
-            StatusPanelFooter(openSettings: openSettings, pairByQR: pairByQR, quit: quit)
+            StatusPanelFooter(openSettings: actions.openSettings, quit: actions.quit)
         }
         .padding(Theme.Spacing.large)
         .frame(width: Theme.Size.popoverWidth)

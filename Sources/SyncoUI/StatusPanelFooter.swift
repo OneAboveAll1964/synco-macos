@@ -3,7 +3,6 @@ import SwiftUI
 @MainActor
 struct StatusPanelFooter: View {
     let openSettings: () -> Void
-    let pairByQR: () -> Void
     let quit: () -> Void
 
     var body: some View {
@@ -12,12 +11,6 @@ struct StatusPanelFooter: View {
                 openSettings()
             } label: {
                 Label("Settings", systemImage: "gearshape")
-            }
-            .controlSize(.small)
-            Button {
-                pairByQR()
-            } label: {
-                Label("Pair by QR", systemImage: "qrcode")
             }
             .controlSize(.small)
             Spacer(minLength: 0)
