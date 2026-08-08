@@ -8,6 +8,7 @@ public struct PairingProposal: Hashable, Sendable {
     public let platform: DevicePlatform
     public let staticPublicKey: Data
     public let fingerprint: Fingerprint
+    public let token: String?
 
     init(request: PairRequestMessage) throws {
         guard DeviceIdentity.staticPublicKey(request.staticPublicKey, matches: request.deviceID) else {
@@ -22,6 +23,7 @@ public struct PairingProposal: Hashable, Sendable {
         platform = request.platform
         staticPublicKey = request.staticPublicKey
         fingerprint = derived
+        token = request.token
     }
 
     public var trustedPeerRecord: TrustedPeerRecord {

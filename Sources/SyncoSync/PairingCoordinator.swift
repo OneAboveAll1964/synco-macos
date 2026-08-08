@@ -10,6 +10,7 @@ public actor PairingCoordinator: PairingApprovalProviding {
     private var proposals: [DeviceID: PairingProposal] = [:]
     private var rejected: Set<DeviceID> = []
     private var reconnector: (any PeerReconnecting)?
+    private var qrToken: String?
 
     public init(state: SyncState, settings: SettingsStore) {
         self.state = state
@@ -22,6 +23,7 @@ public actor PairingCoordinator: PairingApprovalProviding {
 
     public func pairingDecision(for proposal: PairingProposal) async -> PairingDecision {
         guard !rejected.contains(proposal.deviceID) else { return .reject }
+        if consumeQRToken(matching: proposal.token) { return .approve }
         if await alreadyTrusts(proposal) { return .approve }
         await present(proposal)
         return await withTaskCancellationHandler {
@@ -31,6 +33,20 @@ public actor PairingCoordinator: PairingApprovalProviding {
         } onCancel: {
             Task { await self.resolve(proposal.deviceID, decision: .reject) }
         }
+    }
+
+    public func armQRToken(_ token: String) {
+        qrToken = token
+    }
+
+    public func disarmQRToken() {
+        qrToken = nil
+    }
+
+    private func consumeQRToken(matching token: String?) -> Bool {
+        guard let token, let armed = qrToken, token == armed else { return false }
+        qrToken = nil
+        return true
     }
 
     private func alreadyTrusts(_ proposal: PairingProposal) async -> Bool {

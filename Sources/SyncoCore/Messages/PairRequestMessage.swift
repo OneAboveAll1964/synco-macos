@@ -6,19 +6,22 @@ public struct PairRequestMessage: Codable, Hashable, Sendable {
     public let platform: DevicePlatform
     public let staticPublicKey: Data
     public let fingerprint: Fingerprint
+    public let token: String?
 
     public init(
         deviceID: DeviceID,
         displayName: String,
         platform: DevicePlatform = .current,
         staticPublicKey: Data,
-        fingerprint: Fingerprint
+        fingerprint: Fingerprint,
+        token: String? = nil
     ) {
         self.deviceID = deviceID
         self.displayName = displayName
         self.platform = platform
         self.staticPublicKey = staticPublicKey
         self.fingerprint = fingerprint
+        self.token = token
     }
 
     enum CodingKeys: String, CodingKey {
@@ -27,5 +30,6 @@ public struct PairRequestMessage: Codable, Hashable, Sendable {
         case platform = "pl"
         case staticPublicKey = "sPub"
         case fingerprint = "fp"
+        case token = "tok"
     }
 }

@@ -15,6 +15,7 @@ extension MenuBarController {
             rootView: StatusPanel(
                 viewModel: viewModel,
                 openSettings: { [weak self] in self?.openSettings() },
+                pairByQR: { [weak self] in self?.openQRPairing() },
                 quit: { NSApp.terminate(nil) }
             )
         )
@@ -42,6 +43,13 @@ extension MenuBarController {
     public func closePopover() {
         stopDismissMonitor()
         popover.performClose(nil)
+    }
+
+    func openQRPairing() {
+        closePopover()
+        viewModel.beginQRPairing { [weak self] code in
+            self?.qrWindow.present(code)
+        }
     }
 
     func openSettings() {

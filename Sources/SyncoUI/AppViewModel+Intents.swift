@@ -32,6 +32,17 @@ extension AppViewModel {
         Task { await self.commands.rejectPairing(deviceID) }
     }
 
+    func beginQRPairing(_ show: @escaping @MainActor (QRPairingCode) -> Void) {
+        Task {
+            guard let code = await self.commands.beginQRPairing() else { return }
+            show(code)
+        }
+    }
+
+    func endQRPairing() {
+        Task { await self.commands.endQRPairing() }
+    }
+
     func beginPairing(with deviceID: DeviceID) {
         Task { await self.commands.beginPairing(with: deviceID) }
     }

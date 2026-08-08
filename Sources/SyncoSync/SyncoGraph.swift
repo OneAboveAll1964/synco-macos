@@ -68,7 +68,8 @@ public struct SyncoGraph: Sendable {
                 engine: engine,
                 registry: registry,
                 pairing: pairing,
-                settings: settings
+                settings: settings,
+                identity: identity
             ),
             transfers: transfers
         )

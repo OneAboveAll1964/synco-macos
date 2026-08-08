@@ -5,15 +5,18 @@ import SyncoSync
 public struct StatusPanel: View {
     let viewModel: AppViewModel
     let openSettings: () -> Void
+    let pairByQR: () -> Void
     let quit: () -> Void
 
     public init(
         viewModel: AppViewModel,
         openSettings: @escaping () -> Void,
+        pairByQR: @escaping () -> Void,
         quit: @escaping () -> Void
     ) {
         self.viewModel = viewModel
         self.openSettings = openSettings
+        self.pairByQR = pairByQR
         self.quit = quit
     }
 
@@ -35,7 +38,7 @@ public struct StatusPanel: View {
                 }
             }
             Divider()
-            StatusPanelFooter(openSettings: openSettings, quit: quit)
+            StatusPanelFooter(openSettings: openSettings, pairByQR: pairByQR, quit: quit)
         }
         .padding(Theme.Spacing.large)
         .frame(width: Theme.Size.popoverWidth)

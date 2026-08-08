@@ -1,5 +1,6 @@
 import Foundation
 import SyncoCore
+import SyncoCrypto
 import SyncoSettings
 
 public struct SyncCommands: Sendable {
@@ -7,17 +8,39 @@ public struct SyncCommands: Sendable {
     let registry: PeerRegistry
     let pairing: PairingCoordinator
     let settings: SettingsStore
+    let identity: DeviceIdentity
 
     init(
         engine: SyncEngine,
         registry: PeerRegistry,
         pairing: PairingCoordinator,
-        settings: SettingsStore
+        settings: SettingsStore,
+        identity: DeviceIdentity
     ) {
         self.engine = engine
         self.registry = registry
         self.pairing = pairing
         self.settings = settings
+        self.identity = identity
+    }
+
+    public func beginQRPairing() async -> QRPairingCode? {
+        guard let port = await engine.listeningPort else { return nil }
+        let name = await settings.snapshot().displayName
+        guard let code = QRPairing.code(
+            identity: identity,
+            displayName: name,
+            hosts: LocalAddresses.ipv4(),
+            port: port
+        ) else {
+            return nil
+        }
+        await pairing.armQRToken(code.token)
+        return code
+    }
+
+    public func endQRPairing() async {
+        await pairing.disarmQRToken()
     }
 
     public func start() async {
