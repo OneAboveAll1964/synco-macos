@@ -9,6 +9,7 @@ public enum SyncoError: Error, Hashable, Sendable {
     case frameTooLarge(UInt32)
     case emptyFramePayload
     case unknownFrameKind(UInt8)
+    case malformedMediaFrame
     case malformedBlobChunk
     case blobChunkTooLarge(Int)
     case malformedRecord

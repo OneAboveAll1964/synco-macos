@@ -17,6 +17,10 @@ public struct FramePayload: Hashable, Sendable {
         FramePayload(kind: .blobChunk, body: body)
     }
 
+    public static func media(_ body: Data) -> FramePayload {
+        FramePayload(kind: .media, body: body)
+    }
+
     public func encoded() -> Data {
         var output = Data(capacity: body.count + 1)
         output.append(kind.rawValue)

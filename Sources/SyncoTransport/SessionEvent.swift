@@ -6,6 +6,7 @@ public enum SessionEvent: Sendable {
     case established(PeerDescriptor, HandshakeRole)
     case control(ControlMessage)
     case blobChunk(BlobChunk)
+    case media(MediaFrame)
     case pairingProposed(PairingProposal)
     case pairingSettled(PairingSettlement)
     case ended(CloseReason)

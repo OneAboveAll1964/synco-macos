@@ -9,6 +9,8 @@ extension PeerSession {
             switch payload.kind {
             case .blobChunk:
                 emit(.blobChunk(try BlobChunk.decode(body: payload.body)))
+            case .media:
+                emit(.media(try MediaFrame.decode(payload.body)))
             case .control:
                 if let reason = try await handle(SyncoJSON.decode(payload.body)) {
                     await finish(reason: reason, announcing: false)

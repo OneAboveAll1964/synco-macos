@@ -19,6 +19,7 @@ let package = Package(
         .target(name: "SyncoTransfer", dependencies: ["SyncoCore"]),
         .target(name: "SyncoClipboard", dependencies: ["SyncoCore", "SyncoTransfer"]),
         .target(name: "SyncoSettings", dependencies: ["SyncoCore", "SyncoCrypto"]),
+        .target(name: "SyncoRemote", dependencies: ["SyncoCore"]),
         .target(
             name: "SyncoSync",
             dependencies: [
@@ -29,6 +30,7 @@ let package = Package(
                 "SyncoClipboard",
                 "SyncoTransfer",
                 "SyncoSettings",
+                "SyncoRemote",
             ]
         ),
         .target(name: "SyncoUI", dependencies: ["SyncoSync"]),
@@ -42,6 +44,7 @@ let package = Package(
         .testTarget(name: "SyncoUITests", dependencies: ["SyncoUI"]),
         .testTarget(name: "SyncoClipboardTests", dependencies: ["SyncoClipboard"]),
         .testTarget(name: "SyncoRuntimeTests", dependencies: ["SyncoRuntime"]),
+        .testTarget(name: "SyncoRemoteTests", dependencies: ["SyncoRemote"]),
     ],
     swiftLanguageModes: [.v6]
 )

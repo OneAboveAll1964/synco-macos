@@ -29,6 +29,8 @@ struct SessionDriver: Sendable {
             case .blobChunk(let chunk):
                 guard let binding else { continue }
                 await forward(await binding.router.accept(chunk))
+            case .media:
+                continue
             case .pairingProposed(let proposal):
                 await pairing.present(proposal)
             case .pairingSettled(let settlement):

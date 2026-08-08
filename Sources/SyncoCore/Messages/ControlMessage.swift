@@ -16,6 +16,11 @@ public enum ControlMessage: Codable, Hashable, Sendable {
     case transferProgress(TransferProgressMessage)
     case shizukuStart(ShizukuStartMessage)
     case shizukuStartResult(ShizukuStartResultMessage)
+    case remoteStart(RemoteStartMessage)
+    case remoteAccept(RemoteAcceptMessage)
+    case remoteReject(RemoteRejectMessage)
+    case remoteStop(RemoteStopMessage)
+    case remoteInput(RemoteInputMessage)
     case ack(AckMessage)
     case bye(ByeMessage)
     case unknown(type: String)
@@ -45,6 +50,11 @@ public enum ControlMessage: Codable, Hashable, Sendable {
         case .transferProgress: return ControlMessageType.transferProgress.rawValue
         case .shizukuStart: return ControlMessageType.shizukuStart.rawValue
         case .shizukuStartResult: return ControlMessageType.shizukuStartResult.rawValue
+        case .remoteStart: return ControlMessageType.remoteStart.rawValue
+        case .remoteAccept: return ControlMessageType.remoteAccept.rawValue
+        case .remoteReject: return ControlMessageType.remoteReject.rawValue
+        case .remoteStop: return ControlMessageType.remoteStop.rawValue
+        case .remoteInput: return ControlMessageType.remoteInput.rawValue
         case .ack: return ControlMessageType.ack.rawValue
         case .bye: return ControlMessageType.bye.rawValue
         case .unknown(let identifier): return identifier
@@ -68,6 +78,11 @@ public enum ControlMessage: Codable, Hashable, Sendable {
         case .transferProgress(let body): return body
         case .shizukuStart(let body): return body
         case .shizukuStartResult(let body): return body
+        case .remoteStart(let body): return body
+        case .remoteAccept(let body): return body
+        case .remoteReject(let body): return body
+        case .remoteStop(let body): return body
+        case .remoteInput(let body): return body
         case .ack(let body): return body
         case .bye(let body): return body
         case .unknown: return nil
@@ -93,6 +108,11 @@ public enum ControlMessage: Codable, Hashable, Sendable {
         case .transferProgress: self = .transferProgress(try TransferProgressMessage(from: decoder))
         case .shizukuStart: self = .shizukuStart(try ShizukuStartMessage(from: decoder))
         case .shizukuStartResult: self = .shizukuStartResult(try ShizukuStartResultMessage(from: decoder))
+        case .remoteStart: self = .remoteStart(try RemoteStartMessage(from: decoder))
+        case .remoteAccept: self = .remoteAccept(try RemoteAcceptMessage(from: decoder))
+        case .remoteReject: self = .remoteReject(try RemoteRejectMessage(from: decoder))
+        case .remoteStop: self = .remoteStop(try RemoteStopMessage(from: decoder))
+        case .remoteInput: self = .remoteInput(try RemoteInputMessage(from: decoder))
         case .ack: self = .ack(try AckMessage(from: decoder))
         case .bye: self = .bye(try ByeMessage(from: decoder))
         case .none: self = .unknown(type: identifier)
