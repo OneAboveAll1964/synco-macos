@@ -5,6 +5,7 @@ import SyncoCore
 actor FakeClipTransport: ClipTransmitting {
     private(set) var messages: [ControlMessage] = []
     private(set) var chunks: [BlobChunk] = []
+    private(set) var frames: [MediaFrame] = []
 
     func send(_ message: ControlMessage) async throws {
         messages.append(message)
@@ -12,6 +13,10 @@ actor FakeClipTransport: ClipTransmitting {
 
     func send(_ chunk: BlobChunk) async throws {
         chunks.append(chunk)
+    }
+
+    func send(_ frame: MediaFrame) async throws {
+        frames.append(frame)
     }
 
     func recordedMessages() -> [ControlMessage] {

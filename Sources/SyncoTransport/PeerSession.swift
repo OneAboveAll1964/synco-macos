@@ -47,6 +47,11 @@ public actor PeerSession {
         lastOutbound = .now
     }
 
+    public func send(_ frame: MediaFrame) async throws {
+        try await channel.send(FramePayload.media(frame.encoded()))
+        lastOutbound = .now
+    }
+
     public func close(reason: CloseReason = .shutdown) async {
         await finish(reason: reason)
         lifecycle?.cancel()

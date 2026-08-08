@@ -1,5 +1,6 @@
 import Foundation
 import SyncoCore
+import SyncoRemote
 import SyncoSettings
 import SyncoTransfer
 
@@ -19,6 +20,8 @@ public actor ClipRouter {
     let policies: PolicyExchange?
     let shizuku: ShizukuStarter
     var reports = PeerProgressReports()
+    let remote = RemoteHost()
+    var remoteWired = false
 
     public init(
         localDeviceID: DeviceID,
@@ -65,6 +68,15 @@ public actor ClipRouter {
             return nil
         case .shizukuStart:
             await startShizukuOverAdb()
+            return nil
+        case .remoteStart(let request):
+            await startRemote(request)
+            return nil
+        case .remoteInput(let input):
+            await remote.handleInput(input)
+            return nil
+        case .remoteStop:
+            await remote.stop()
             return nil
         case .transferProgress(let report):
             await transfers.reportPeerProgress(report.transferId, received: report.received)
