@@ -12,6 +12,12 @@ info_plist="$root_dir/Resources/Info.plist"
 entitlements="$root_dir/Resources/$app_name.entitlements"
 icon_file="$root_dir/Resources/$app_name.icns"
 
+sibling_protocol="$root_dir/../synco-android/PROTOCOL.md"
+if [ -f "$sibling_protocol" ] && ! cmp -s "$root_dir/PROTOCOL.md" "$sibling_protocol"; then
+    echo "PROTOCOL.md differs between synco-macos and synco-android; align them first" >&2
+    exit 1
+fi
+
 swift build -c release --package-path "$root_dir" --product "$app_name"
 bin_dir="$(swift build -c release --package-path "$root_dir" --show-bin-path)"
 
