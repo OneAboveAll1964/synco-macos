@@ -49,6 +49,11 @@ public actor ClipboardService {
         return await clip(from: capture)
     }
 
+    func currentClipForEchoCheck() async -> LocalClip? {
+        let capture = await PasteboardCapture.systemPasteboard()
+        return await clip(from: capture)
+    }
+
     public func apply(_ clip: ClipMessage, receivedFiles: [TransferID: URL]) async -> Bool {
         guard clip.origin != deviceID else { return false }
         await suppression.remember(clip.hash)
@@ -56,11 +61,21 @@ public actor ClipboardService {
         if applied != clip.hash {
             await suppression.remember(applied)
         }
-        lastKnownChangeCount = await writer.applyToSystemPasteboard(
+        _ = await writer.applyToSystemPasteboard(
             clip.representations,
             receivedFiles: receivedFiles
         )
+        await rememberWrittenClip()
         return true
+    }
+
+    private func rememberWrittenClip() async {
+        let capture = await PasteboardCapture.systemPasteboard()
+        lastKnownChangeCount = capture.changeCount
+        let readback = reader.read(capture)
+        if !readback.isEmpty {
+            await suppression.remember(readback.canonicalHash)
+        }
     }
 
     public func noteSent(hash: String) {
