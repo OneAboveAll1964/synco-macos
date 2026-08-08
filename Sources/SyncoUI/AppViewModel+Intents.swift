@@ -39,9 +39,6 @@ extension AppViewModel {
         }
     }
 
-    func endQRPairing() {
-        Task { await self.commands.endQRPairing() }
-    }
 
     func beginPairing(with deviceID: DeviceID) {
         Task { await self.commands.beginPairing(with: deviceID) }

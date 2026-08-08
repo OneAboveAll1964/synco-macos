@@ -64,6 +64,26 @@ final class QRTokenApprovalTests: XCTestCase {
     }
 
     @MainActor
+    func testAnExpiredTokenNoLongerApproves() async throws {
+        let coordinator = PairingCoordinator(
+            state: SyncState(),
+            settings: temporarySettings(),
+            qrTokenLifetime: .milliseconds(50)
+        )
+        await coordinator.armQRToken("golden")
+        try await Task.sleep(for: .milliseconds(120))
+
+        let task = Task {
+            await coordinator.pairingDecision(for: try self.proposal(token: "golden"))
+        }
+        try await Task.sleep(for: .milliseconds(150))
+        task.cancel()
+        let decision = try await task.value
+
+        XCTAssertEqual(decision, .reject)
+    }
+
+    @MainActor
     func testAWrongTokenFallsBackToAskingTheUser() async throws {
         let coordinator = PairingCoordinator(
             state: SyncState(),

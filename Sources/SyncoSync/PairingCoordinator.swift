@@ -10,11 +10,18 @@ public actor PairingCoordinator: PairingApprovalProviding {
     private var proposals: [DeviceID: PairingProposal] = [:]
     private var rejected: Set<DeviceID> = []
     private var reconnector: (any PeerReconnecting)?
-    private var qrToken: String?
+    private var qrToken: (value: String, armedAt: ContinuousClock.Instant)?
+    private let qrTokenLifetime: Duration
+    private let clock = ContinuousClock()
 
-    public init(state: SyncState, settings: SettingsStore) {
+    public init(
+        state: SyncState,
+        settings: SettingsStore,
+        qrTokenLifetime: Duration = .seconds(600)
+    ) {
         self.state = state
         self.settings = settings
+        self.qrTokenLifetime = qrTokenLifetime
     }
 
     public func attach(reconnector: any PeerReconnecting) {
@@ -39,15 +46,16 @@ public actor PairingCoordinator: PairingApprovalProviding {
     }
 
     public func armQRToken(_ token: String) {
-        qrToken = token
-    }
-
-    public func disarmQRToken() {
-        qrToken = nil
+        qrToken = (value: token, armedAt: clock.now)
     }
 
     private func consumeQRToken(matching token: String?) -> Bool {
-        guard let token, let armed = qrToken, token == armed else { return false }
+        guard let token, let armed = qrToken else { return false }
+        guard armed.armedAt.duration(to: clock.now) <= qrTokenLifetime else {
+            qrToken = nil
+            return false
+        }
+        guard token == armed.value else { return false }
         qrToken = nil
         return true
     }

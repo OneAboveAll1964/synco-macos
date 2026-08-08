@@ -39,9 +39,6 @@ public struct SyncCommands: Sendable {
         return code
     }
 
-    public func endQRPairing() async {
-        await pairing.disarmQRToken()
-    }
 
     public func start() async {
         await engine.start()

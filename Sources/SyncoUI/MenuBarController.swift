@@ -20,7 +20,7 @@ public final class MenuBarController: NSObject {
         self.statusItem = statusItem ?? EarlyStatusItem.make()
         settingsWindow = SettingsWindowController(viewModel: viewModel)
         pairingWindow = PairingWindowController(viewModel: viewModel)
-        qrWindow = QRPairingWindow(viewModel: viewModel)
+        qrWindow = QRPairingWindow()
         super.init()
     }
 

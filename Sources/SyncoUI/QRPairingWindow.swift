@@ -6,11 +6,8 @@ import SyncoSync
 @MainActor
 final class QRPairingWindow {
     private var window: NSWindow?
-    private let viewModel: AppViewModel
 
-    init(viewModel: AppViewModel) {
-        self.viewModel = viewModel
-    }
+    init() {}
 
     func present(_ code: QRPairingCode) {
         dismiss()
@@ -26,10 +23,8 @@ final class QRPairingWindow {
     }
 
     func dismiss() {
-        guard window != nil else { return }
         window?.close()
         window = nil
-        viewModel.endQRPairing()
     }
 }
 
@@ -51,7 +46,7 @@ struct QRPairingSheet: View {
                 .foregroundStyle(.secondary)
                 .frame(width: 280)
                 .fixedSize(horizontal: false, vertical: true)
-            Text("The code stops working the moment one phone uses it.")
+            Text("You can close this window — the code stays valid for ten minutes or until one phone uses it.")
                 .font(Theme.Typography.caption)
                 .foregroundStyle(.secondary)
             Button("Done", action: onDone)
