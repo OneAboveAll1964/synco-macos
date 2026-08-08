@@ -1,4 +1,5 @@
 import Foundation
+import os
 import SyncoCore
 
 public actor TransferManager {
@@ -8,6 +9,7 @@ public actor TransferManager {
     private let incoming: IncomingTransferRegistry
     private let outgoing: OutgoingTransferRegistry
     private var limit: BlobSizeLimit
+    private nonisolated let liveLimit: OSAllocatedUnfairLock<BlobSizeLimit>
 
     public init(
         paths: TransferPaths = .shared,
@@ -17,13 +19,19 @@ public actor TransferManager {
         self.paths = paths
         self.progress = progress
         self.limit = limit
+        liveLimit = OSAllocatedUnfairLock(initialState: limit)
         incoming = IncomingTransferRegistry(paths: paths, progress: progress, limit: limit)
         outgoing = OutgoingTransferRegistry(progress: progress, limit: limit)
     }
 
     public var maxBlobBytes: Int64 { limit.maxBytes }
 
+    public nonisolated func currentLimit() -> BlobSizeLimit {
+        liveLimit.withLock { $0 }
+    }
+
     public func setMaxBlobBytes(_ value: Int64) async {
+        liveLimit.withLock { $0 = BlobSizeLimit(maxBytes: value) }
         limit = BlobSizeLimit(maxBytes: value)
         await incoming.setLimit(limit)
         await outgoing.setLimit(limit)

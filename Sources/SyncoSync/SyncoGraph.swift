@@ -25,12 +25,14 @@ public struct SyncoGraph: Sendable {
         let identity = try identityStore.loadOrCreate()
         let document = await settings.snapshot()
         let state = SyncState()
-        let limit = BlobSizeLimit(maxBytes: document.maxBlobBytes)
+        let transfers = TransferManager(
+            paths: paths,
+            limit: BlobSizeLimit(maxBytes: document.maxBlobBytes)
+        )
         let clipboard = ClipboardService(
             deviceID: identity.deviceID,
-            reader: PasteboardReader(paths: paths, limit: limit)
+            reader: PasteboardReader(paths: paths, limit: { transfers.currentLimit() })
         )
-        let transfers = TransferManager(paths: paths, limit: limit)
         let history = ClipHistoryStore(directory: paths.stagingDirectory.deletingLastPathComponent())
         let pairing = PairingCoordinator(state: state, settings: settings)
         let registry = PeerRegistry(
@@ -73,7 +75,12 @@ public struct SyncoGraph: Sendable {
                 registry: registry,
                 pairing: pairing,
                 settings: settings,
-                identity: identity
+                identity: identity,
+                manual: ManualClips(
+                    deviceID: identity.deviceID,
+                    limit: { transfers.currentLimit() }
+                ),
+                history: history
             ),
             transfers: transfers
         )

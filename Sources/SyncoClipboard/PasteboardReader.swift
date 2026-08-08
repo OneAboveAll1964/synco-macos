@@ -10,12 +10,12 @@ public struct PasteboardReader: Sendable {
 
     private let paths: TransferPaths
     private let threshold: InlineThreshold
-    private let limit: BlobSizeLimit
+    private let limit: @Sendable () -> BlobSizeLimit
 
     public init(
         paths: TransferPaths = .shared,
         threshold: InlineThreshold = .default,
-        limit: BlobSizeLimit = .default
+        limit: @escaping @Sendable () -> BlobSizeLimit = { .default }
     ) {
         self.paths = paths
         self.threshold = threshold
@@ -134,7 +134,7 @@ public struct PasteboardReader: Sendable {
     private func measure(_ url: URL) -> FileMeasurement? {
         do {
             let measurement = try FileMeasurement.measure(fileURL: url)
-            return limit.allows(measurement.size) ? measurement : nil
+            return limit().allows(measurement.size) ? measurement : nil
         } catch {
             SyncoLog.clipboard.error("unreadable clipboard file: \(error.localizedDescription, privacy: .public)")
             return nil
@@ -144,7 +144,7 @@ public struct PasteboardReader: Sendable {
     private func stage(_ data: Data, transferID: TransferID, mime: String) -> StagedPayload? {
         do {
             let staged = try StagedPayload.stage(data, transferID: transferID, mime: mime, paths: paths)
-            return limit.allows(staged.measurement.size) ? staged : nil
+            return limit().allows(staged.measurement.size) ? staged : nil
         } catch {
             SyncoLog.clipboard.error("clipboard staging failed: \(error.localizedDescription, privacy: .public)")
             return nil
