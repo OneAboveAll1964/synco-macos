@@ -49,6 +49,21 @@ final class QRTokenApprovalTests: XCTestCase {
     }
 
     @MainActor
+    func testTheTokenOutranksAnEarlierRejection() async throws {
+        let coordinator = PairingCoordinator(
+            state: SyncState(),
+            settings: temporarySettings()
+        )
+        let proposal = try proposal(token: "golden")
+        await coordinator.reject(proposal.deviceID)
+        await coordinator.armQRToken("golden")
+
+        let decision = await coordinator.pairingDecision(for: proposal)
+
+        XCTAssertEqual(decision, .approve)
+    }
+
+    @MainActor
     func testAWrongTokenFallsBackToAskingTheUser() async throws {
         let coordinator = PairingCoordinator(
             state: SyncState(),

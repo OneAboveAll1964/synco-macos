@@ -22,8 +22,11 @@ public actor PairingCoordinator: PairingApprovalProviding {
     }
 
     public func pairingDecision(for proposal: PairingProposal) async -> PairingDecision {
+        if consumeQRToken(matching: proposal.token) {
+            await clearRejection(proposal.deviceID)
+            return .approve
+        }
         guard !rejected.contains(proposal.deviceID) else { return .reject }
-        if consumeQRToken(matching: proposal.token) { return .approve }
         if await alreadyTrusts(proposal) { return .approve }
         await present(proposal)
         return await withTaskCancellationHandler {
