@@ -59,6 +59,7 @@ extension SyncEngine {
 
     private func consumeClipboard() async {
         for await clip in await clipboard.localClips() {
+            await history.record(representations: clip.representations, fromPeer: false)
             await registry.broadcast(clip)
         }
     }

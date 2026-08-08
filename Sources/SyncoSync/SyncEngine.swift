@@ -12,6 +12,7 @@ public actor SyncEngine {
 
     let settings: SettingsStore
     let clipboard: ClipboardService
+    let history: ClipHistoryStore
     let transfers: TransferManager
     let registry: PeerRegistry
     let browser: BonjourBrowser
@@ -35,7 +36,8 @@ public actor SyncEngine {
         registry: PeerRegistry,
         browser: BonjourBrowser,
         pathMonitor: PathMonitorService,
-        state: SyncState
+        state: SyncState,
+        history: ClipHistoryStore
     ) {
         self.identity = identity
         self.document = document
@@ -46,6 +48,7 @@ public actor SyncEngine {
         self.browser = browser
         self.pathMonitor = pathMonitor
         self.state = state
+        self.history = history
     }
 
     public var isRunning: Bool { running }

@@ -12,23 +12,28 @@ public final class AppViewModel {
     public let receivedDirectory: URL
     public private(set) var document: SettingsDocument
     public internal(set) var launchAtLoginStatus: LaunchAtLogin.Status
+    public private(set) var clips: [ClipHistoryEntry] = []
 
     let commands: SyncCommands
     private let settings: SettingsStore
+    private let clipHistory: ClipHistoryStore?
     private var observation: Task<Void, Never>?
+    private var clipsLoop: Task<Void, Never>?
 
     public init(
         state: SyncState,
         commands: SyncCommands,
         settings: SettingsStore,
         document: SettingsDocument,
-        receivedDirectory: URL
+        receivedDirectory: URL,
+        clipHistory: ClipHistoryStore? = nil
     ) {
         self.state = state
         self.commands = commands
         self.settings = settings
         self.document = document
         self.receivedDirectory = receivedDirectory
+        self.clipHistory = clipHistory
         launchAtLoginStatus = LaunchAtLogin.status
     }
 
@@ -41,7 +46,8 @@ public final class AppViewModel {
             commands: graph.commands,
             settings: graph.settings,
             document: await graph.settings.snapshot(),
-            receivedDirectory: paths.receivedDirectory
+            receivedDirectory: paths.receivedDirectory,
+            clipHistory: graph.clipHistory
         )
     }
 
@@ -54,9 +60,17 @@ public final class AppViewModel {
                 self.apply(updated)
             }
         }
+        clipsLoop = Task { [weak self] in
+            guard let history = self?.clipHistory else { return }
+            for await entries in await history.changes() {
+                self?.clips = entries
+            }
+        }
     }
 
     public func end() {
+        clipsLoop?.cancel()
+        clipsLoop = nil
         observation?.cancel()
         observation = nil
     }

@@ -9,6 +9,7 @@ import SyncoTransport
 
 public struct SyncoGraph: Sendable {
     public let identity: DeviceIdentity
+    public let clipHistory: ClipHistoryStore
     public let settings: SettingsStore
     public let state: SyncState
     public let engine: SyncEngine
@@ -30,6 +31,7 @@ public struct SyncoGraph: Sendable {
             reader: PasteboardReader(paths: paths, limit: limit)
         )
         let transfers = TransferManager(paths: paths, limit: limit)
+        let history = ClipHistoryStore(directory: paths.stagingDirectory.deletingLastPathComponent())
         let pairing = PairingCoordinator(state: state, settings: settings)
         let registry = PeerRegistry(
             localDeviceID: identity.deviceID,
@@ -41,7 +43,7 @@ public struct SyncoGraph: Sendable {
             ),
             dialer: SyncoDialer(),
             transfers: transfers,
-            clipboard: clipboard,
+            clipboard: HistoryRecordingClipboard(delegate: clipboard, history: history),
             pairing: pairing,
             state: state,
             policies: PolicyExchange(localDeviceID: identity.deviceID, settings: settings)
@@ -56,11 +58,13 @@ public struct SyncoGraph: Sendable {
             registry: registry,
             browser: BonjourBrowser(localDeviceID: identity.deviceID),
             pathMonitor: PathMonitorService(),
-            state: state
+            state: state,
+            history: history
         )
         state.apply(identity: LocalIdentitySnapshot(identity: identity, displayName: document.displayName))
         return SyncoGraph(
             identity: identity,
+            clipHistory: history,
             settings: settings,
             state: state,
             engine: engine,

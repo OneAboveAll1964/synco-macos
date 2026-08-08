@@ -31,6 +31,10 @@ public struct StatusPanel: View {
             }
             Divider()
             PeerListSection(viewModel: viewModel)
+            if !viewModel.clips.isEmpty {
+                Divider()
+                RecentClipsSection(clips: viewModel.clips)
+            }
             if !viewModel.state.transfers.isEmpty {
                 Divider()
                 TransferList(transfers: viewModel.state.transfers) { transferID in
